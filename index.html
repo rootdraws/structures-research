@@ -1,0 +1,9200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Alpha Structures: slisBNB, BTCB and wBETH borrow-and-hedge routes with measured rates, capacity, LTV safety zones and the variable hedge.">
+<title>Alpha Structures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F4F0; --panel:#FFFFFF; --ink:#15171A; --mute:#6A706C; --line:#D9DCD5; --soft:#E9EBE5;
+  --acc:#B7800A; --acc-soft:#F4E6C4; --pos:#2E7A57; --neg:#B0432C; --warn:#9A6A00;
+  --sans:"Schibsted Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#101211; --panel:#181B19; --ink:#E7E9E4; --mute:#8E948F; --line:#2B302D; --soft:#202421;
+  --acc:#E3AE3F; --acc-soft:#3A2F16; --pos:#5CC08F; --neg:#E4745C; --warn:#E3AE3F;}}
+:root[data-theme="dark"]{
+  --bg:#101211; --panel:#181B19; --ink:#E7E9E4; --mute:#8E948F; --line:#2B302D; --soft:#202421;
+  --acc:#E3AE3F; --acc-soft:#3A2F16; --pos:#5CC08F; --neg:#E4745C; --warn:#E3AE3F;}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--sans);font-size:14px;line-height:1.4;padding-inline:16px}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-block:14px;border-bottom:1px solid var(--line);max-width:1240px;margin-inline:auto}
+.brand{font-weight:800;letter-spacing:-.01em;font-size:16px}
+.brand span{color:var(--acc)}
+.sw{display:flex;gap:2px;flex-wrap:wrap}
+.sw button{font-family:var(--mono);width:30px;height:28px;border-radius:4px;color:var(--mute)}
+.sw button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.sw button:hover{color:var(--ink)}
+.tg{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;color:var(--mute)}
+.tg button{width:34px;height:20px;border-radius:10px;background:var(--soft);border:1px solid var(--line);position:relative}
+.tg button::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--mute);transition:transform .15s}
+.tg button[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--acc)}
+.tg button[aria-pressed="true"]::after{transform:translateX(14px);background:var(--acc)}
+.dsel{display:flex;align-items:center;gap:2px;margin-left:auto;font-size:13px;color:var(--mute)}
+.dsel span{margin-right:8px}
+.dsel button{font-family:var(--mono);min-width:34px;height:26px;border-radius:4px;border:1px solid var(--line);color:var(--mute)}
+.dsel button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lname{font-size:12px;color:var(--mute);font-family:var(--mono)}
+main{max-width:1240px;margin-inline:auto;padding-block:24px 64px}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .mute{color:var(--mute)} .acc{color:var(--acc)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;padding:3px 8px;border:1px solid var(--line);border-radius:4px;background:var(--panel);white-space:nowrap}
+.chip.k-usdf{border-color:var(--acc);color:var(--acc)}
+.l1>*,.l4>*,.l8>*,.steps>*,.stack>*{min-width:0}
+.chip{max-width:100%;white-space:normal}
+.opt{max-width:100%}
+.arrow{color:var(--mute);font-family:var(--mono);font-size:12px}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute)}
+.big{font-family:var(--mono);font-weight:600;font-size:44px;letter-spacing:-.02em;line-height:1}
+.src{border-bottom:1px dotted var(--mute);cursor:help}
+.scroll{overflow-x:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 1 sidebar */
+.l1{display:grid;grid-template-columns:250px 1fr;gap:28px}
+.tree{font-size:13px}
+.assets{display:flex;gap:4px;margin-bottom:16px}
+.assets button{font-family:var(--mono);font-size:12px;padding:5px 10px;border:1px solid var(--line);border-radius:4px;color:var(--mute)}
+.assets button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tree .root{font-weight:800;font-size:18px;margin-bottom:10px}
+.tree .dbt{margin-top:12px;font-weight:700;display:flex;justify-content:space-between}
+.tree .br{display:flex;justify-content:space-between;width:100%;text-align:left;padding:5px 8px 5px 14px;border-left:1px solid var(--line);color:var(--mute)}
+.tree .br:hover{color:var(--ink)}
+.tree .br[aria-current="true"]{color:var(--ink);border-left:2px solid var(--acc);background:var(--panel)}
+.detail{display:grid;gap:22px;align-content:start}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.kv div{background:var(--panel);padding:12px}
+.kv b{display:block;font-family:var(--mono);font-size:18px;font-weight:600;margin-top:4px}
+.legs{display:grid;gap:6px}
+.leg{display:grid;grid-template-columns:130px 1fr 70px;gap:10px;align-items:center;font-size:13px}
+.bar{height:10px;position:relative;background:var(--soft)}
+.bar i{position:absolute;top:0;bottom:0}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.07em;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td.r,.tbl th.r{text-align:right}
+@media (max-width:760px){.l1{grid-template-columns:1fr}.big{font-size:34px}}
+
+/* 4 builder */
+.steps{display:grid;gap:18px}
+.step .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.opt{padding:8px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);font-size:13px;text-align:left}
+.opt small{display:block;font-family:var(--mono);color:var(--mute);font-size:11px}
+.opt[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.opt:disabled{opacity:.35;cursor:not-allowed}
+.opt:disabled[aria-pressed="true"]{opacity:1;cursor:default}
+.l4{display:grid;grid-template-columns:1.1fr .9fr;gap:36px}
+.stack{display:grid;gap:4px;align-content:start}
+.srow{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.srow.tot{border-bottom:0;border-top:2px solid var(--ink);font-weight:700;font-size:15px}
+.sleeves{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px}
+.sleeves input{width:60px;font:inherit;font-family:var(--mono);padding:4px 6px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px}
+@media (max-width:760px){.l4{grid-template-columns:1fr}}
+
+.note{border:1px solid var(--line);border-left:4px solid var(--c);background:var(--panel);padding:12px 14px;margin-bottom:22px;font-size:14px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.note span{color:var(--mute)}
+.note.flag{margin:0;font-weight:400}
+.note.usdf{display:grid;gap:8px;margin-bottom:0}
+.note.usdf p{margin:0}
+.note.usdf a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.note.flag b{font-weight:500}
+.z-g,.z-t-g{--c:var(--pos)} .z-y,.z-t-y{--c:var(--warn)} .z-r,.z-t-r{--c:var(--neg)}
+.z-t-g,.z-t-y,.z-t-r{color:var(--c)}
+.ltvrow{display:flex;align-items:center;gap:14px;margin-top:10px}
+.ltvrow input{flex:1;accent-color:var(--ink)}
+.ltvrow b{font-size:20px;min-width:64px;text-align:right}
+.zbar{position:relative;display:flex;height:8px;margin-top:10px}
+.zbar i{display:block;height:100%}
+.zg{background:var(--pos)} .zy{background:var(--warn)} .zr{background:var(--neg)}
+.zmark{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink);transform:translateX(-1px)}
+.zlab{position:relative;height:16px;font-size:11px;color:var(--mute);margin-top:4px}
+.zlab span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.zlab span:first-child{transform:none;left:0}
+.zlab span:last-child{transform:translateX(-100%)}
+.zone{margin-top:8px;font-size:13px}
+
+/* 6 terminal */
+
+/* 2 flow */
+svg text{font-family:var(--mono);fill:var(--ink)}
+svg .m{fill:var(--mute)}
+.node{cursor:pointer}
+.vizwrap{overflow-x:auto;border:1px solid var(--line);background:var(--panel)}
+.below{margin-top:18px}
+
+</style>
+<style>html,body{margin:0}</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="brand">/alpha-<span>structures</span></div>
+  <div class="dsel" role="group" aria-label="Resting delta"><span>resting delta</span><button data-delta="1">1</button><button data-delta="0.5">0.5</button><button data-delta="0">0</button></div>
+  <div class="tg" style="margin-left:0">+ variable hedge <button id="dialbtn" aria-pressed="false" aria-label="Add variable hedge"></button></div>
+</header>
+<main id="app"></main>
+
+<script>
+const ALL = {
+ "asOf": "2026-09-18",
+ "legs": {
+  "U>USDT": {
+   "label": "U \u2192 USDT",
+   "pool": "Pancake 0.01%",
+   "depth1": 10147356,
+   "per_day": 486257,
+   "note": "20 ticks, two LPs hold ~half"
+  },
+  "USD1>USDT": {
+   "label": "USD1 \u2192 USDT",
+   "pool": "Pancake 0.01%",
+   "depth1": 1251746,
+   "per_day": 330239
+  },
+  "lisUSD>USDT": {
+   "label": "lisUSD \u2192 USDT",
+   "pool": "0.01%, factory 0xcb01\u20267b20",
+   "depth1": 451297,
+   "back1": 25329,
+   "note": "one LP; buying back clears $25k"
+  },
+  "USDT>USDC": {
+   "label": "USDT \u2192 USDC",
+   "pool": "Pancake 0.01% + 0.05%",
+   "depth1": 20776330,
+   "per_day": 10198977
+  },
+  "lisUSD>USDT psm": {
+   "label": "lisUSD \u2192 USDT, Lista PSM",
+   "pool": "2% fee, $500k/day",
+   "depth1": 332932,
+   "per_day": 500000
+  },
+  "USDT>lisUSD psm": {
+   "label": "USDT \u2192 lisUSD, Lista PSM",
+   "pool": "1:1, 0% fee",
+   "depth1": 9792350
+  },
+  "USDT>WBNB": {
+   "label": "USDT \u2192 WBNB",
+   "pool": "Pancake 0.01% + 0.05%",
+   "depth1": 1630451
+  },
+  "USDT>BTCB": {
+   "label": "USDT \u2192 BTCB",
+   "pool": "Pancake",
+   "depth1": 955772
+  },
+  "USDT>ETH": {
+   "label": "USDT \u2192 ETH",
+   "pool": "Pancake",
+   "depth1": 134364
+  },
+  "ETH>wBETH": {
+   "label": "ETH \u2192 wBETH",
+   "pool": "Pancake, on-chain",
+   "depth1": 52112,
+   "note": "wBETH mints and redeems on Binance; on-chain depth is tiny"
+  },
+  "U>WBNB": {
+   "label": "U \u2192 WBNB direct",
+   "pool": "Pancake 0.05%",
+   "depth1": 105101
+  },
+  "USD1>WBNB": {
+   "label": "USD1 \u2192 WBNB direct",
+   "pool": "Pancake 0.05%",
+   "depth1": 82217
+  },
+  "mint": {
+   "label": "BNB \u2192 slisBNB mint",
+   "pool": "ListaStakeManager",
+   "depth1": null,
+   "note": "1 BNB \u2192 0.9630 slisBNB, no slippage"
+  },
+  "USDT>USDF": {
+   "label": "USDT \u2192 USDF mint",
+   "pool": "Aster, 1:1",
+   "depth1": null,
+   "note": "no pool, no slippage"
+  },
+  "exit": {
+   "label": "slisBNB \u2192 WBNB exit",
+   "pool": "Pancake 0.05% + 0.01%",
+   "depth1": 1635833,
+   "depth5": 3571974
+  },
+  "bridge-arb": {
+   "label": "USDC BSC \u2192 Arbitrum",
+   "bridge": "relay",
+   "seconds": 1,
+   "bps": 7.0,
+   "back": {
+    "bridge": "relay",
+    "seconds": 6,
+    "bps": 31.0
+   }
+  },
+  "bridge-eth": {
+   "label": "USDC BSC \u2192 Ethereum",
+   "bridge": "relay",
+   "seconds": 3.5,
+   "bps": 7.01,
+   "back": {
+    "bridge": "relay",
+    "seconds": 24,
+    "bps": 31.0
+   }
+  }
+ },
+ "assets": {
+  "slisBNB": {
+   "hedge": "BNB",
+   "risk": {
+    "alert": 0.05,
+    "falls": {
+     "minutes": 22,
+     "window": "2025-09-16 to 2026-09-16",
+     "worst25": {
+      "day": "2025-10-10",
+      "fall": 0.3216
+     },
+     "worst25_other": {
+      "day": "2025-11-03",
+      "fall": 0.0656
+     },
+     "worst24h": {
+      "day": "2025-10-10",
+      "fall": 0.3561
+     }
+    },
+    "falls_by": {
+     "lighter-main": {
+      "minutes": 22,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.3216
+      },
+      "worst25_other": {
+       "day": "2025-11-03",
+       "fall": 0.0656
+      },
+      "worst24h": {
+       "day": "2025-10-10",
+       "fall": 0.3561
+      }
+     },
+     "hyperliquid": {
+      "minutes": 7,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.301
+      },
+      "worst25_other": {
+       "day": "2026-08-22",
+       "fall": 0.0593
+      },
+      "worst24h": {
+       "day": "2025-10-10",
+       "fall": 0.3561
+      }
+     },
+     "aster": {
+      "minutes": 2,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.2101
+      },
+      "worst25_other": {
+       "day": "2025-10-03",
+       "fall": 0.0559
+      },
+      "worst24h": {
+       "day": "2025-10-10",
+       "fall": 0.3561
+      }
+     }
+    },
+    "fastest": {
+     "m1": {
+      "day": "2025-10-10",
+      "fall": 0.1885
+     },
+     "m2": {
+      "day": "2025-10-10",
+      "fall": 0.2101
+     }
+    },
+    "response": {
+     "lighter-main": {
+      "seconds": 1291,
+      "parts": "Lighter withdrawal 21.1 min (fast bridge limit $0) + deBridge Ethereum to BSC 27 s + repay"
+     },
+     "hyperliquid": {
+      "seconds": 395.1640000343323,
+      "parts": "Hyperliquid withdrawal 3.8 min median, 6.5 min at the 99th percentile (4,530 withdrawals over 3 days; 0.5% took over an hour) + relay Arbitrum to BSC 6 s + repay"
+     },
+     "aster": {
+      "seconds": 60,
+      "parts": "no bridge: Aster is on BSC, withdraw and repay in about a minute"
+     }
+    }
+   },
+   "collateral": {
+    "name": "slisBNB",
+    "yield": 1.925,
+    "yield_label": "1.93% in Lista, 0.93% elsewhere",
+    "yield_src": "launch pool + liquid staking, Lista app 90d 2.32% / 6mo 1.53%, averaged",
+    "exit5": 3570000,
+    "venus_room": 881195
+   },
+   "model": {
+    "equity": 1000.0,
+    "hedge_lev": 3.0,
+    "costs_pct": 1.056,
+    "ltv_rule": "target LTV = 90% of the liquidation threshold"
+   },
+   "funding": {
+    "Aster": {
+     "apr": 2.9,
+     "longs_pay": 35.2,
+     "n": 1086,
+     "days": 362,
+     "interval_h": 8.0
+    },
+    "Hyperliquid": {
+     "apr": 5.54,
+     "longs_pay": 77.6,
+     "n": 8682,
+     "days": 362,
+     "interval_h": 1.0
+    },
+    "Lighter": {
+     "apr": 7.29,
+     "longs_pay": 84.2,
+     "n": 8732,
+     "days": 364,
+     "interval_h": 1.0
+    }
+   },
+   "debts": [
+    {
+     "id": "venus-usdt",
+     "venue": "Venus",
+     "asset": "USDT",
+     "rate": 4.65,
+     "quoted": 4.65,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 58015555,
+     "kink_room": 33415403,
+     "kink_label": "rate kink at 84%",
+     "supply_usd": 192624356,
+     "borrowed_usd": 128389056,
+     "util": 0.6665,
+     "curve": [
+      [
+       0.5,
+       3.3268
+      ],
+      [
+       0.51,
+       3.3944
+      ],
+      [
+       0.52,
+       3.4621
+      ],
+      [
+       0.53,
+       3.5299
+      ],
+      [
+       0.54,
+       3.5976
+      ],
+      [
+       0.55,
+       3.6655
+      ],
+      [
+       0.56,
+       3.7333
+      ],
+      [
+       0.57,
+       3.8013
+      ],
+      [
+       0.58,
+       3.8692
+      ],
+      [
+       0.59,
+       3.9372
+      ],
+      [
+       0.6,
+       4.0053
+      ],
+      [
+       0.61,
+       4.0734
+      ],
+      [
+       0.62,
+       4.1415
+      ],
+      [
+       0.63,
+       4.2097
+      ],
+      [
+       0.64,
+       4.2779
+      ],
+      [
+       0.65,
+       4.3462
+      ],
+      [
+       0.66,
+       4.4145
+      ],
+      [
+       0.67,
+       4.4829
+      ],
+      [
+       0.68,
+       4.5513
+      ],
+      [
+       0.69,
+       4.6197
+      ],
+      [
+       0.7,
+       4.6882
+      ],
+      [
+       0.71,
+       4.7567
+      ],
+      [
+       0.72,
+       4.8253
+      ],
+      [
+       0.73,
+       4.8939
+      ],
+      [
+       0.74,
+       4.9626
+      ],
+      [
+       0.75,
+       5.0313
+      ],
+      [
+       0.76,
+       5.1001
+      ],
+      [
+       0.77,
+       5.1689
+      ],
+      [
+       0.78,
+       5.2378
+      ],
+      [
+       0.79,
+       5.3067
+      ],
+      [
+       0.8,
+       5.3756
+      ],
+      [
+       0.81,
+       5.4446
+      ],
+      [
+       0.82,
+       5.5136
+      ],
+      [
+       0.83,
+       5.5827
+      ],
+      [
+       0.84,
+       5.6518
+      ],
+      [
+       0.85,
+       5.9162
+      ],
+      [
+       0.86,
+       6.1811
+      ],
+      [
+       0.87,
+       6.4468
+      ],
+      [
+       0.88,
+       6.7131
+      ],
+      [
+       0.89,
+       6.9801
+      ],
+      [
+       0.9,
+       7.2478
+      ],
+      [
+       0.91,
+       7.5161
+      ],
+      [
+       0.92,
+       7.7851
+      ],
+      [
+       0.93,
+       12.2514
+      ],
+      [
+       0.94,
+       16.9023
+      ],
+      [
+       0.95,
+       21.7453
+      ],
+      [
+       0.96,
+       26.7883
+      ],
+      [
+       0.97,
+       32.0397
+      ],
+      [
+       0.98,
+       37.508
+      ],
+      [
+       0.99,
+       43.2021
+      ]
+     ],
+     "curve_now": 4.4591
+    },
+    {
+     "id": "venus-u",
+     "venue": "Venus",
+     "asset": "U",
+     "rate": 3.96,
+     "quoted": 3.96,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 10590509,
+     "kink_room": 5069626,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 28188036,
+     "borrowed_usd": 17480803,
+     "util": 0.6201,
+     "curve": [
+      [
+       0.5,
+       3.1732
+      ],
+      [
+       0.51,
+       3.2377
+      ],
+      [
+       0.52,
+       3.3022
+      ],
+      [
+       0.53,
+       3.3668
+      ],
+      [
+       0.54,
+       3.4314
+      ],
+      [
+       0.55,
+       3.496
+      ],
+      [
+       0.56,
+       3.5607
+      ],
+      [
+       0.57,
+       3.6254
+      ],
+      [
+       0.58,
+       3.6901
+      ],
+      [
+       0.59,
+       3.7549
+      ],
+      [
+       0.6,
+       3.8198
+      ],
+      [
+       0.61,
+       3.8847
+      ],
+      [
+       0.62,
+       3.9496
+      ],
+      [
+       0.63,
+       4.0146
+      ],
+      [
+       0.64,
+       4.0796
+      ],
+      [
+       0.65,
+       4.1446
+      ],
+      [
+       0.66,
+       4.2097
+      ],
+      [
+       0.67,
+       4.2748
+      ],
+      [
+       0.68,
+       4.34
+      ],
+      [
+       0.69,
+       4.4052
+      ],
+      [
+       0.7,
+       4.4704
+      ],
+      [
+       0.71,
+       4.5357
+      ],
+      [
+       0.72,
+       4.601
+      ],
+      [
+       0.73,
+       4.6664
+      ],
+      [
+       0.74,
+       4.7318
+      ],
+      [
+       0.75,
+       4.7973
+      ],
+      [
+       0.76,
+       4.8627
+      ],
+      [
+       0.77,
+       4.9283
+      ],
+      [
+       0.78,
+       4.9938
+      ],
+      [
+       0.79,
+       5.0595
+      ],
+      [
+       0.8,
+       5.1251
+      ],
+      [
+       0.81,
+       5.7575
+      ],
+      [
+       0.82,
+       6.3936
+      ],
+      [
+       0.83,
+       7.0336
+      ],
+      [
+       0.84,
+       7.6774
+      ],
+      [
+       0.85,
+       8.3251
+      ],
+      [
+       0.86,
+       8.9766
+      ],
+      [
+       0.87,
+       9.6321
+      ],
+      [
+       0.88,
+       10.2915
+      ],
+      [
+       0.89,
+       10.9548
+      ],
+      [
+       0.9,
+       11.6221
+      ],
+      [
+       0.91,
+       15.48
+      ],
+      [
+       0.92,
+       19.4707
+      ],
+      [
+       0.93,
+       23.599
+      ],
+      [
+       0.94,
+       27.8696
+      ],
+      [
+       0.95,
+       32.2873
+      ],
+      [
+       0.96,
+       36.8571
+      ],
+      [
+       0.97,
+       41.5844
+      ],
+      [
+       0.98,
+       46.4746
+      ],
+      [
+       0.99,
+       51.5331
+      ]
+     ],
+     "curve_now": 3.9506
+    },
+    {
+     "id": "venus-usd1",
+     "venue": "Venus",
+     "asset": "USD1",
+     "rate": 4.271,
+     "quoted": 4.271,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 546464,
+     "kink_room": 354586,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 959262,
+     "borrowed_usd": 412824,
+     "util": 0.4304,
+     "curve": [
+      [
+       0.5,
+       5.1251
+      ],
+      [
+       0.51,
+       5.2302
+      ],
+      [
+       0.52,
+       5.3355
+      ],
+      [
+       0.53,
+       5.4408
+      ],
+      [
+       0.54,
+       5.5463
+      ],
+      [
+       0.55,
+       5.6518
+      ],
+      [
+       0.56,
+       5.7575
+      ],
+      [
+       0.57,
+       5.8632
+      ],
+      [
+       0.58,
+       5.9691
+      ],
+      [
+       0.59,
+       6.0751
+      ],
+      [
+       0.6,
+       6.1811
+      ],
+      [
+       0.61,
+       6.2873
+      ],
+      [
+       0.62,
+       6.3936
+      ],
+      [
+       0.63,
+       6.5
+      ],
+      [
+       0.64,
+       6.6065
+      ],
+      [
+       0.65,
+       6.7131
+      ],
+      [
+       0.66,
+       6.8198
+      ],
+      [
+       0.67,
+       6.9267
+      ],
+      [
+       0.68,
+       7.0336
+      ],
+      [
+       0.69,
+       7.1406
+      ],
+      [
+       0.7,
+       7.2478
+      ],
+      [
+       0.71,
+       7.355
+      ],
+      [
+       0.72,
+       7.4624
+      ],
+      [
+       0.73,
+       7.5698
+      ],
+      [
+       0.74,
+       7.6774
+      ],
+      [
+       0.75,
+       7.7851
+      ],
+      [
+       0.76,
+       7.8929
+      ],
+      [
+       0.77,
+       8.0007
+      ],
+      [
+       0.78,
+       8.1087
+      ],
+      [
+       0.79,
+       8.2168
+      ],
+      [
+       0.8,
+       8.3251
+      ],
+      [
+       0.81,
+       11.0658
+      ],
+      [
+       0.82,
+       13.8756
+      ],
+      [
+       0.83,
+       16.7563
+      ],
+      [
+       0.84,
+       19.7097
+      ],
+      [
+       0.85,
+       22.7376
+      ],
+      [
+       0.86,
+       25.8419
+      ],
+      [
+       0.87,
+       29.0244
+      ],
+      [
+       0.88,
+       32.2873
+      ],
+      [
+       0.89,
+       35.6324
+      ],
+      [
+       0.9,
+       39.0618
+      ],
+      [
+       0.91,
+       42.5777
+      ],
+      [
+       0.92,
+       46.1823
+      ],
+      [
+       0.93,
+       49.8777
+      ],
+      [
+       0.94,
+       53.6663
+      ],
+      [
+       0.95,
+       57.5504
+      ],
+      [
+       0.96,
+       61.5324
+      ],
+      [
+       0.97,
+       65.6148
+      ],
+      [
+       0.98,
+       69.8
+      ],
+      [
+       0.99,
+       74.0907
+      ]
+     ],
+     "curve_now": 4.3958
+    },
+    {
+     "id": "lista-lisusd",
+     "venue": "Lista",
+     "asset": "lisUSD",
+     "rate": 2.531,
+     "quoted": 2.569,
+     "days": 282,
+     "lt": 0.85,
+     "ltv": 0.765,
+     "free": 8062851,
+     "kink_room": null,
+     "kink_label": "",
+     "supply_usd": 27543105,
+     "borrowed_usd": 19480253,
+     "util": 0.7073,
+     "curve": [
+      [
+       0.5,
+       2.4265
+      ],
+      [
+       0.51,
+       2.4265
+      ],
+      [
+       0.52,
+       2.4265
+      ],
+      [
+       0.53,
+       2.4265
+      ],
+      [
+       0.54,
+       2.4265
+      ],
+      [
+       0.55,
+       2.4265
+      ],
+      [
+       0.56,
+       2.4265
+      ],
+      [
+       0.57,
+       2.4265
+      ],
+      [
+       0.58,
+       2.4265
+      ],
+      [
+       0.59,
+       2.4265
+      ],
+      [
+       0.6,
+       2.4265
+      ],
+      [
+       0.61,
+       2.4265
+      ],
+      [
+       0.62,
+       2.4265
+      ],
+      [
+       0.63,
+       2.4265
+      ],
+      [
+       0.64,
+       2.4265
+      ],
+      [
+       0.65,
+       2.4265
+      ],
+      [
+       0.66,
+       2.4265
+      ],
+      [
+       0.67,
+       2.4265
+      ],
+      [
+       0.68,
+       2.4265
+      ],
+      [
+       0.69,
+       2.4265
+      ],
+      [
+       0.7,
+       2.4265
+      ],
+      [
+       0.71,
+       2.4265
+      ],
+      [
+       0.72,
+       2.4265
+      ],
+      [
+       0.73,
+       2.4265
+      ],
+      [
+       0.74,
+       2.4265
+      ],
+      [
+       0.75,
+       2.4265
+      ],
+      [
+       0.76,
+       2.4265
+      ],
+      [
+       0.77,
+       2.4265
+      ],
+      [
+       0.78,
+       2.4265
+      ],
+      [
+       0.79,
+       2.4265
+      ],
+      [
+       0.8,
+       2.4265
+      ],
+      [
+       0.81,
+       2.4265
+      ],
+      [
+       0.82,
+       2.4265
+      ],
+      [
+       0.83,
+       2.4265
+      ],
+      [
+       0.84,
+       2.4265
+      ],
+      [
+       0.85,
+       2.4265
+      ],
+      [
+       0.86,
+       2.4265
+      ],
+      [
+       0.87,
+       2.4265
+      ],
+      [
+       0.88,
+       2.4265
+      ],
+      [
+       0.89,
+       2.4265
+      ],
+      [
+       0.9,
+       2.4265
+      ],
+      [
+       0.91,
+       2.4265
+      ],
+      [
+       0.92,
+       2.4265
+      ],
+      [
+       0.93,
+       2.4265
+      ],
+      [
+       0.94,
+       2.4265
+      ],
+      [
+       0.95,
+       2.4265
+      ],
+      [
+       0.96,
+       2.4265
+      ],
+      [
+       0.97,
+       2.4265
+      ],
+      [
+       0.98,
+       2.4265
+      ],
+      [
+       0.99,
+       2.4265
+      ]
+     ],
+     "curve_now": 2.4265
+    },
+    {
+     "id": "lista-u",
+     "venue": "Lista",
+     "asset": "U",
+     "rate": 2.253,
+     "quoted": 2.261,
+     "days": 250,
+     "lt": 0.86,
+     "ltv": 0.774,
+     "free": 1630138,
+     "kink_room": 271690,
+     "kink_label": "rate kink at 90%",
+     "supply_usd": 13584485,
+     "borrowed_usd": 11954347,
+     "util": 0.88,
+     "curve": [
+      [
+       0.5,
+       1.533
+      ],
+      [
+       0.51,
+       1.5522
+      ],
+      [
+       0.52,
+       1.5713
+      ],
+      [
+       0.53,
+       1.5905
+      ],
+      [
+       0.54,
+       1.6097
+      ],
+      [
+       0.55,
+       1.6289
+      ],
+      [
+       0.56,
+       1.648
+      ],
+      [
+       0.57,
+       1.6672
+      ],
+      [
+       0.58,
+       1.6864
+      ],
+      [
+       0.59,
+       1.7055
+      ],
+      [
+       0.6,
+       1.7247
+      ],
+      [
+       0.61,
+       1.7439
+      ],
+      [
+       0.62,
+       1.7631
+      ],
+      [
+       0.63,
+       1.7822
+      ],
+      [
+       0.64,
+       1.8014
+      ],
+      [
+       0.65,
+       1.8206
+      ],
+      [
+       0.66,
+       1.8398
+      ],
+      [
+       0.67,
+       1.8589
+      ],
+      [
+       0.68,
+       1.8781
+      ],
+      [
+       0.69,
+       1.8973
+      ],
+      [
+       0.7,
+       1.9165
+      ],
+      [
+       0.71,
+       1.9356
+      ],
+      [
+       0.72,
+       1.9548
+      ],
+      [
+       0.73,
+       1.974
+      ],
+      [
+       0.74,
+       1.9932
+      ],
+      [
+       0.75,
+       2.0123
+      ],
+      [
+       0.76,
+       2.0315
+      ],
+      [
+       0.77,
+       2.0507
+      ],
+      [
+       0.78,
+       2.0699
+      ],
+      [
+       0.79,
+       2.089
+      ],
+      [
+       0.8,
+       2.1082
+      ],
+      [
+       0.81,
+       2.1274
+      ],
+      [
+       0.82,
+       2.1466
+      ],
+      [
+       0.83,
+       2.1657
+      ],
+      [
+       0.84,
+       2.1849
+      ],
+      [
+       0.85,
+       2.2041
+      ],
+      [
+       0.86,
+       2.2233
+      ],
+      [
+       0.87,
+       2.2425
+      ],
+      [
+       0.88,
+       2.2616
+      ],
+      [
+       0.89,
+       2.2808
+      ],
+      [
+       0.9,
+       2.3
+      ],
+      [
+       0.91,
+       2.9901
+      ],
+      [
+       0.92,
+       3.6803
+      ],
+      [
+       0.93,
+       4.3706
+      ],
+      [
+       0.94,
+       5.061
+      ],
+      [
+       0.95,
+       5.7514
+      ],
+      [
+       0.96,
+       6.4418
+      ],
+      [
+       0.97,
+       7.1324
+      ],
+      [
+       0.98,
+       7.823
+      ],
+      [
+       0.99,
+       8.5137
+      ]
+     ],
+     "curve_now": 2.2616
+    }
+   ],
+   "branches": [
+    {
+     "id": "lista-u-lighter-main",
+     "debt": "Lista U",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Lista U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BNB on Lighter"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.589,
+       "debt": -4.157,
+       "funding": 10.088,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 9.464
+     },
+     "net": 9.464,
+     "delta1_net": 9.46,
+     "dial": {
+      "add": 18.62,
+      "worst": -10.64
+     },
+     "ceiling": {
+      "usd": 147253,
+      "binding": "Lista U rate kink at 90%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 883518,
+        "per": "debt",
+        "raw": 1630138
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1497615,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 147253,
+        "per": "debt",
+        "raw": 271690
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 263546,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 7.29,
+      "longs_pay": 84.2,
+      "n": 8732,
+      "days": 364,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.253,
+      "funding": 7.29,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 1.925
+     }
+    },
+    {
+     "id": "lista-u-usdf",
+     "debt": "Lista U",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Lista U",
+      "USDT",
+      "mint USDF",
+      "short BNB on Aster"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.589,
+       "debt": -4.157,
+       "funding": 4.013,
+       "margin": 4.428,
+       "costs": -1.056
+      },
+      "net": 7.817
+     },
+     "net": 7.817,
+     "delta1_net": null,
+     "dial": {
+      "add": 18.62,
+      "worst": -10.64
+     },
+     "ceiling": {
+      "usd": 147253,
+      "binding": "Lista U rate kink at 90%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 883518,
+        "per": "debt",
+        "raw": 1630138
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1497615,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 147253,
+        "per": "debt",
+        "raw": 271690
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 216796,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 263546,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.253,
+      "funding": 2.9,
+      "margin_yield": 9.6,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 1.925
+     },
+     "deps": [
+      "U \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "lista-u-hyperliquid",
+     "debt": "Lista U",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Lista U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BNB on Hyperliquid"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.589,
+       "debt": -4.157,
+       "funding": 7.666,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 7.042
+     },
+     "net": 7.042,
+     "delta1_net": 7.04,
+     "dial": {
+      "add": 18.62,
+      "worst": -10.64
+     },
+     "ceiling": {
+      "usd": 147253,
+      "binding": "Lista U rate kink at 90%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 883518,
+        "per": "debt",
+        "raw": 1630138
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1497615,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 147253,
+        "per": "debt",
+        "raw": 271690
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 263546,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.54,
+      "longs_pay": 77.6,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.253,
+      "funding": 5.54,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 1.925
+     }
+    },
+    {
+     "id": "lista-u-aster",
+     "debt": "Lista U",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Lista U",
+      "short BNB on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.589,
+       "debt": -4.157,
+       "funding": 4.013,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 3.389
+     },
+     "net": 3.389,
+     "delta1_net": 3.39,
+     "dial": {
+      "add": 18.62,
+      "worst": -10.64
+     },
+     "ceiling": {
+      "usd": 147253,
+      "binding": "Lista U rate kink at 90%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 883518,
+        "per": "debt",
+        "raw": 1630138
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1497615,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 147253,
+        "per": "debt",
+        "raw": 271690
+       }
+      ]
+     },
+     "deps": [
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.253,
+      "funding": 2.9,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 1.925
+     }
+    },
+    {
+     "id": "venus-u-lighter-main",
+     "debt": "Venus U",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BNB on Lighter"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.198,
+       "funding": 8.558,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 3.331
+     },
+     "net": 3.331,
+     "delta1_net": 3.33,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 310664,
+      "binding": "U \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 7.29,
+      "longs_pay": 84.2,
+      "n": 8732,
+      "days": 364,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 7.29,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "venus-usd1-lighter-main",
+     "debt": "Venus USD1",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BNB on Lighter"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.685,
+       "funding": 8.558,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.844
+     },
+     "net": 2.844,
+     "delta1_net": 2.84,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 210986,
+      "binding": "USD1 \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 7.29,
+      "longs_pay": 84.2,
+      "n": 8732,
+      "days": 364,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 7.29,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "lista-lisusd-aster",
+     "debt": "Lista lisUSD",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Lista lisUSD",
+      "short BNB on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "lisUSD>USDT",
+      "lisUSD>USDT psm",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.346,
+      "debt": 1.795,
+      "short": 1.346,
+      "margin": 0.449,
+      "recycled": 1.346,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.516,
+       "debt": -4.542,
+       "funding": 3.904,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.821
+     },
+     "net": 2.821,
+     "delta1_net": 2.82,
+     "dial": {
+      "add": 18.12,
+      "worst": -10.35
+     },
+     "ceiling": {
+      "usd": 1521712,
+      "binding": "slisBNB exit, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 4492536,
+        "per": "debt",
+        "raw": 8062851
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1521712,
+        "per": "collateral",
+        "raw": 3570000
+       }
+      ]
+     },
+     "deps": [
+      "lisUSD \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "Out of lisUSD is costly and slow: past the $451k pool, lisUSD \u2192 USDT goes through Lista's PSM at 2% and $500k a day. Into lisUSD is free: USDT \u2192 lisUSD 1:1.",
+     "exit": [
+      "USDT>lisUSD psm"
+     ],
+     "inputs": {
+      "rate": 2.531,
+      "funding": 2.9,
+      "margin_yield": 0.0,
+      "lt": 0.85,
+      "ltv": 0.765,
+      "yield": 1.925
+     }
+    },
+    {
+     "id": "venus-usdt-lighter-main",
+     "debt": "Venus USDT",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BNB on Lighter"
+     ],
+     "legs": [
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -7.278,
+       "funding": 8.558,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.251
+     },
+     "net": 2.251,
+     "delta1_net": 2.25,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 405350,
+      "binding": "Venus slisBNB cap",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum"
+     ],
+     "funding": {
+      "apr": 7.29,
+      "longs_pay": 84.2,
+      "n": 8732,
+      "days": 364,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 7.29,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "venus-u-usdf",
+     "debt": "Venus U",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus U",
+      "USDT",
+      "mint USDF",
+      "short BNB on Aster"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.198,
+       "funding": 3.404,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 1.934
+     },
+     "net": 1.934,
+     "delta1_net": null,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 255556,
+      "binding": "USDF cap per account",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 2.9,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     },
+     "deps": [
+      "U \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-usd1-usdf",
+     "debt": "Venus USD1",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "mint USDF",
+      "short BNB on Aster"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.685,
+       "funding": 3.404,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 1.447
+     },
+     "net": 1.447,
+     "delta1_net": null,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 210986,
+      "binding": "USD1 \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 2.9,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     },
+     "deps": [
+      "USD1 \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-u-hyperliquid",
+     "debt": "Venus U",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BNB on Hyperliquid"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.198,
+       "funding": 6.503,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 1.276
+     },
+     "net": 1.276,
+     "delta1_net": 1.28,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 310664,
+      "binding": "U \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.54,
+      "longs_pay": 77.6,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 5.54,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "venus-usdt-usdf",
+     "debt": "Venus USDT",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus USDT",
+      "mint USDF",
+      "short BNB on Aster"
+     ],
+     "legs": [
+      "USDT>USDF"
+     ],
+     "loop": [
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -7.278,
+       "funding": 3.404,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 0.854
+     },
+     "net": 0.854,
+     "delta1_net": null,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 255556,
+      "binding": "USDF cap per account",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 2.9,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     },
+     "deps": [
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-usd1-hyperliquid",
+     "debt": "Venus USD1",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BNB on Hyperliquid"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.685,
+       "funding": 6.503,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 0.79
+     },
+     "net": 0.79,
+     "delta1_net": 0.79,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 210986,
+      "binding": "USD1 \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.54,
+      "longs_pay": 77.6,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 5.54,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "venus-usdt-hyperliquid",
+     "debt": "Venus USDT",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BNB on Hyperliquid"
+     ],
+     "legs": [
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -7.278,
+       "funding": 6.503,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 0.196
+     },
+     "net": 0.196,
+     "delta1_net": 0.2,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 405350,
+      "binding": "Venus slisBNB cap",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum"
+     ],
+     "funding": {
+      "apr": 5.54,
+      "longs_pay": 77.6,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 5.54,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "slisbnb-raw-aster",
+     "debt": "slisBNB on Aster",
+     "hedge": "aster",
+     "kind": "raw",
+     "title": "Raw slisBNB as margin",
+     "path": [
+      "slisBNB",
+      "deposit on Aster as margin",
+      "short BNB on Aster"
+     ],
+     "legs": [],
+     "loop": [],
+     "exit": [],
+     "pos": {
+      "collateral": 1.0,
+      "debt": 0.0,
+      "short": 1.0,
+      "margin": 1.0,
+      "recycled": 0.0,
+      "hedge_lev": 1.0
+     },
+     "carry": {
+      "legs": {},
+      "net": 0.0
+     },
+     "net": 0.0,
+     "delta1_net": null,
+     "dial": {
+      "add": 13.46,
+      "worst": -7.69
+     },
+     "ceiling": {
+      "usd": 3570000,
+      "binding": "slisBNB exit, 5%",
+      "all": [
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 3570000,
+        "per": "collateral",
+        "raw": 3570000
+       }
+      ]
+     },
+     "inputs": {
+      "rate": 0.0,
+      "funding": 2.9,
+      "margin_yield": 0.0,
+      "lt": null,
+      "ltv": 0.0,
+      "yield": 0.9325,
+      "haircut": 0.9
+     },
+     "book": {
+      "0.5": 1458955,
+      "1": 1836245,
+      "2": 2107551
+     },
+     "deps": [
+      "slisBNB margin counts at 90% on Aster",
+      "no launch pool outside Lista"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null
+    },
+    {
+     "id": "venus-u-aster",
+     "debt": "Venus U",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus U",
+      "short BNB on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "U>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.198,
+       "funding": 3.404,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -1.823
+     },
+     "net": -1.823,
+     "delta1_net": -1.82,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 405350,
+      "binding": "Venus slisBNB cap",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       }
+      ]
+     },
+     "deps": [
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 2.9,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "venus-usd1-aster",
+     "debt": "Venus USD1",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus USD1",
+      "short BNB on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "USD1>USDT",
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -6.685,
+       "funding": 3.404,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -2.31
+     },
+     "net": -2.31,
+     "delta1_net": -2.31,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 226541,
+      "binding": "Venus USD1 rate kink at 80%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       }
+      ]
+     },
+     "deps": [
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 2.9,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    },
+    {
+     "id": "venus-usdt-aster",
+     "debt": "Venus USDT",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus USDT",
+      "short BNB on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "USDT>WBNB",
+      "mint"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 2.027,
+       "debt": -7.278,
+       "funding": 3.404,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -2.903
+     },
+     "net": -2.903,
+     "delta1_net": -2.9,
+     "dial": {
+      "add": 15.8,
+      "worst": -9.03
+     },
+     "ceiling": {
+      "usd": 405350,
+      "binding": "Venus slisBNB cap",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "slisBNB exit, 5%",
+        "usd": 1642200,
+        "per": "collateral",
+        "raw": 3570000
+       },
+       {
+        "name": "Venus slisBNB cap",
+        "usd": 405350,
+        "per": "collateral",
+        "raw": 881195
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [],
+     "funding": {
+      "apr": 2.9,
+      "longs_pay": 35.2,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 2.9,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.9325
+     }
+    }
+   ],
+   "dial_table": [
+    {
+     "hours": 1,
+     "trailing": 36.53,
+     "worst_window": 2.94,
+     "worst_trade": -8.02,
+     "trades": 46
+    },
+    {
+     "hours": 4,
+     "trailing": 15.83,
+     "worst_window": -0.48,
+     "worst_trade": -6.27,
+     "trades": 39
+    },
+    {
+     "hours": 12,
+     "trailing": 15.8,
+     "worst_window": 13.36,
+     "worst_trade": -9.03,
+     "trades": 34
+    },
+    {
+     "hours": 24,
+     "trailing": -12.79,
+     "worst_window": -19.26,
+     "worst_trade": -11.64,
+     "trades": 31
+    }
+   ],
+   "rejected": [
+    {
+     "what": "slisBNB/BNB Lista",
+     "why": "gate 0: not a stable debt. Same-asset or cross-asset borrows break the delta-1 model"
+    },
+    {
+     "what": "slisBNB/BNB Lista",
+     "why": "gate 0: not a stable debt. Same-asset or cross-asset borrows break the delta-1 model"
+    },
+    {
+     "what": "slisBNB/USD1 Lista",
+     "why": "gate 2: borrow index never moved, nobody has borrowed from it"
+    },
+    {
+     "what": "hedge on lighter-rhc",
+     "why": "gate 3: does not list BNB"
+    },
+    {
+     "what": "slisBNB Venus lisUSD / hyperliquid",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "slisBNB Venus lisUSD / lighter-main",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "slisBNB Lista lisUSD / hyperliquid",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "slisBNB Lista lisUSD / lighter-main",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    }
+   ],
+   "sourced": {
+    "usdf_apy": {
+     "value": 9.6,
+     "source": "Aster Earn page, Trade APY, read by Root 2026-09-18"
+    },
+    "usdf_cap": {
+     "value": 100000,
+     "source": "docs.asterdex.com Trade & Earn: capped at 100,000 USDF per account"
+    },
+    "usdf_volume": {
+     "value": 50000,
+     "source": "Trade & Earn: 2+ days a week, 50,000 USDT weekly volume"
+    },
+    "aster_maker": {
+     "value": 0.0,
+     "source": "docs.asterdex.com fees: USDT perps 0% maker, 0.04% taker"
+    },
+    "aster_taker": {
+     "value": 0.04,
+     "source": "docs.asterdex.com fees"
+    },
+    "mint_rate": {
+     "value": 0.962954865386,
+     "source": "ListaStakeManager.convertBnbToSnBnb(1e18), 2026-09-18"
+    },
+    "venus_slis_cap": {
+     "value": 2000.0,
+     "source": "Comptroller.supplyCaps(vslisBNB), 2026-09-18"
+    },
+    "venus_slis_used": {
+     "value": 623.3,
+     "source": "vslisBNB totalSupply x exchangeRateStored, 2026-09-18"
+    },
+    "bnb_usd": {
+     "value": 731.1,
+     "source": "slisBNB/WBNB and WBNB/USDT pool spot, fetch_depth.py 2026-09-17"
+    },
+    "slis_per_bnb": {
+     "value": 1.038443,
+     "source": "ListaStakeManager.convertSnBnbToBnb(1e18)"
+    },
+    "dial_equity": {
+     "value": 15.8,
+     "source": "variable hedge, trailing 365 days (2025-09-16 to 2026-09-16), BNB, 12 h cuts, net of funding, taker fills, 1.174x short"
+    },
+    "dial_short": {
+     "value": 1.174,
+     "source": "short multiple the dial was measured at"
+    },
+    "dial_worst": {
+     "value": -9.03,
+     "source": "worst single trade in that window, % of equity"
+    },
+    "dial_trades": {
+     "value": 34,
+     "source": "trades in that window"
+    },
+    "dial_on": {
+     "value": 4.7,
+     "source": "% of hours the de-hedge is open"
+    },
+    "dial_edge": {
+     "value": 1.563,
+     "source": "median BNB move 12 h after a flush, %"
+    },
+    "dial_control": {
+     "value": 0.054,
+     "source": "median BNB move 12 h after a random minute, %"
+    },
+    "dial_decay": {
+     "value": "about three quarters in two years",
+     "source": "BNB window 64.3% (2024) to 13.5% (latest)"
+    },
+    "dial_windows": {
+     "value": "21 of 21",
+     "source": "rolling 12-month windows positive, full range +4.62% to +81.20%"
+    },
+    "dial_hours": {
+     "value": 12,
+     "source": "best trailing year among horizons whose worst rolling window is at least 12h's (+13.4%): 1h +36.5% (worst window +2.9%); 4h +15.8% (worst window -0.5%); 12h +15.8% (worst window +13.4%); 24h -12.8% (worst window -19.3%)"
+    }
+   }
+  },
+  "BTCB": {
+   "hedge": "BTC",
+   "risk": {
+    "alert": 0.05,
+    "falls": {
+     "minutes": 22,
+     "window": "2025-09-16 to 2026-09-16",
+     "worst25": {
+      "day": "2025-10-10",
+      "fall": 0.1178
+     },
+     "worst25_other": {
+      "day": "2026-02-06",
+      "fall": 0.0522
+     },
+     "worst24h": {
+      "day": "2026-02-06",
+      "fall": 0.1844
+     }
+    },
+    "falls_by": {
+     "lighter-main": {
+      "minutes": 22,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.1178
+      },
+      "worst25_other": {
+       "day": "2026-02-06",
+       "fall": 0.0522
+      },
+      "worst24h": {
+       "day": "2026-02-06",
+       "fall": 0.1844
+      }
+     },
+     "hyperliquid": {
+      "minutes": 7,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.1036
+      },
+      "worst25_other": {
+       "day": "2025-11-21",
+       "fall": 0.0494
+      },
+      "worst24h": {
+       "day": "2026-02-06",
+       "fall": 0.1844
+      }
+     },
+     "aster": {
+      "minutes": 2,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.0842
+      },
+      "worst25_other": {
+       "day": "2025-11-21",
+       "fall": 0.0472
+      },
+      "worst24h": {
+       "day": "2026-02-06",
+       "fall": 0.1844
+      }
+     }
+    },
+    "fastest": {
+     "m1": {
+      "day": "2025-10-10",
+      "fall": 0.0781
+     },
+     "m2": {
+      "day": "2025-10-10",
+      "fall": 0.0842
+     }
+    },
+    "response": {
+     "lighter-main": {
+      "seconds": 1291,
+      "parts": "Lighter withdrawal 21.1 min (fast bridge limit $0) + deBridge Ethereum to BSC 27 s + repay"
+     },
+     "hyperliquid": {
+      "seconds": 395.1640000343323,
+      "parts": "Hyperliquid withdrawal 3.8 min median, 6.5 min at the 99th percentile (4,530 withdrawals over 3 days; 0.5% took over an hour) + relay Arbitrum to BSC 6 s + repay"
+     },
+     "aster": {
+      "seconds": 60,
+      "parts": "no bridge: Aster is on BSC, withdraw and repay in about a minute"
+     }
+    }
+   },
+   "collateral": {
+    "name": "BTCB",
+    "yield": 0.0,
+    "yield_label": "0%",
+    "yield_src": "a wrapper, no yield",
+    "exit5": 10270000,
+    "venus_room": 471019213
+   },
+   "model": {
+    "equity": 1000.0,
+    "hedge_lev": 3.0,
+    "costs_pct": 1.056,
+    "ltv_rule": "target LTV = 90% of the liquidation threshold"
+   },
+   "funding": {
+    "Aster": {
+     "apr": 4.23,
+     "longs_pay": 79.7,
+     "n": 1086,
+     "days": 362,
+     "interval_h": 8.0
+    },
+    "Hyperliquid": {
+     "apr": 5.9,
+     "longs_pay": 80.8,
+     "n": 8682,
+     "days": 362,
+     "interval_h": 1.0
+    },
+    "Lighter": {
+     "apr": 5.37,
+     "longs_pay": 75.7,
+     "n": 8683,
+     "days": 362,
+     "interval_h": 1.0
+    }
+   },
+   "debts": [
+    {
+     "id": "venus-usdt",
+     "venue": "Venus",
+     "asset": "USDT",
+     "rate": 4.65,
+     "quoted": 4.65,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 58015555,
+     "kink_room": 33415403,
+     "kink_label": "rate kink at 84%",
+     "supply_usd": 192624356,
+     "borrowed_usd": 128389056,
+     "util": 0.6665,
+     "curve": [
+      [
+       0.5,
+       3.3268
+      ],
+      [
+       0.51,
+       3.3944
+      ],
+      [
+       0.52,
+       3.4621
+      ],
+      [
+       0.53,
+       3.5299
+      ],
+      [
+       0.54,
+       3.5976
+      ],
+      [
+       0.55,
+       3.6655
+      ],
+      [
+       0.56,
+       3.7333
+      ],
+      [
+       0.57,
+       3.8013
+      ],
+      [
+       0.58,
+       3.8692
+      ],
+      [
+       0.59,
+       3.9372
+      ],
+      [
+       0.6,
+       4.0053
+      ],
+      [
+       0.61,
+       4.0734
+      ],
+      [
+       0.62,
+       4.1415
+      ],
+      [
+       0.63,
+       4.2097
+      ],
+      [
+       0.64,
+       4.2779
+      ],
+      [
+       0.65,
+       4.3462
+      ],
+      [
+       0.66,
+       4.4145
+      ],
+      [
+       0.67,
+       4.4829
+      ],
+      [
+       0.68,
+       4.5513
+      ],
+      [
+       0.69,
+       4.6197
+      ],
+      [
+       0.7,
+       4.6882
+      ],
+      [
+       0.71,
+       4.7567
+      ],
+      [
+       0.72,
+       4.8253
+      ],
+      [
+       0.73,
+       4.8939
+      ],
+      [
+       0.74,
+       4.9626
+      ],
+      [
+       0.75,
+       5.0313
+      ],
+      [
+       0.76,
+       5.1001
+      ],
+      [
+       0.77,
+       5.1689
+      ],
+      [
+       0.78,
+       5.2378
+      ],
+      [
+       0.79,
+       5.3067
+      ],
+      [
+       0.8,
+       5.3756
+      ],
+      [
+       0.81,
+       5.4446
+      ],
+      [
+       0.82,
+       5.5136
+      ],
+      [
+       0.83,
+       5.5827
+      ],
+      [
+       0.84,
+       5.6518
+      ],
+      [
+       0.85,
+       5.9162
+      ],
+      [
+       0.86,
+       6.1811
+      ],
+      [
+       0.87,
+       6.4468
+      ],
+      [
+       0.88,
+       6.7131
+      ],
+      [
+       0.89,
+       6.9801
+      ],
+      [
+       0.9,
+       7.2478
+      ],
+      [
+       0.91,
+       7.5161
+      ],
+      [
+       0.92,
+       7.7851
+      ],
+      [
+       0.93,
+       12.2514
+      ],
+      [
+       0.94,
+       16.9023
+      ],
+      [
+       0.95,
+       21.7453
+      ],
+      [
+       0.96,
+       26.7883
+      ],
+      [
+       0.97,
+       32.0397
+      ],
+      [
+       0.98,
+       37.508
+      ],
+      [
+       0.99,
+       43.2021
+      ]
+     ],
+     "curve_now": 4.4591
+    },
+    {
+     "id": "venus-u",
+     "venue": "Venus",
+     "asset": "U",
+     "rate": 3.96,
+     "quoted": 3.96,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 10590509,
+     "kink_room": 5069626,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 28188036,
+     "borrowed_usd": 17480803,
+     "util": 0.6201,
+     "curve": [
+      [
+       0.5,
+       3.1732
+      ],
+      [
+       0.51,
+       3.2377
+      ],
+      [
+       0.52,
+       3.3022
+      ],
+      [
+       0.53,
+       3.3668
+      ],
+      [
+       0.54,
+       3.4314
+      ],
+      [
+       0.55,
+       3.496
+      ],
+      [
+       0.56,
+       3.5607
+      ],
+      [
+       0.57,
+       3.6254
+      ],
+      [
+       0.58,
+       3.6901
+      ],
+      [
+       0.59,
+       3.7549
+      ],
+      [
+       0.6,
+       3.8198
+      ],
+      [
+       0.61,
+       3.8847
+      ],
+      [
+       0.62,
+       3.9496
+      ],
+      [
+       0.63,
+       4.0146
+      ],
+      [
+       0.64,
+       4.0796
+      ],
+      [
+       0.65,
+       4.1446
+      ],
+      [
+       0.66,
+       4.2097
+      ],
+      [
+       0.67,
+       4.2748
+      ],
+      [
+       0.68,
+       4.34
+      ],
+      [
+       0.69,
+       4.4052
+      ],
+      [
+       0.7,
+       4.4704
+      ],
+      [
+       0.71,
+       4.5357
+      ],
+      [
+       0.72,
+       4.601
+      ],
+      [
+       0.73,
+       4.6664
+      ],
+      [
+       0.74,
+       4.7318
+      ],
+      [
+       0.75,
+       4.7973
+      ],
+      [
+       0.76,
+       4.8627
+      ],
+      [
+       0.77,
+       4.9283
+      ],
+      [
+       0.78,
+       4.9938
+      ],
+      [
+       0.79,
+       5.0595
+      ],
+      [
+       0.8,
+       5.1251
+      ],
+      [
+       0.81,
+       5.7575
+      ],
+      [
+       0.82,
+       6.3936
+      ],
+      [
+       0.83,
+       7.0336
+      ],
+      [
+       0.84,
+       7.6774
+      ],
+      [
+       0.85,
+       8.3251
+      ],
+      [
+       0.86,
+       8.9766
+      ],
+      [
+       0.87,
+       9.6321
+      ],
+      [
+       0.88,
+       10.2915
+      ],
+      [
+       0.89,
+       10.9548
+      ],
+      [
+       0.9,
+       11.6221
+      ],
+      [
+       0.91,
+       15.48
+      ],
+      [
+       0.92,
+       19.4707
+      ],
+      [
+       0.93,
+       23.599
+      ],
+      [
+       0.94,
+       27.8696
+      ],
+      [
+       0.95,
+       32.2873
+      ],
+      [
+       0.96,
+       36.8571
+      ],
+      [
+       0.97,
+       41.5844
+      ],
+      [
+       0.98,
+       46.4746
+      ],
+      [
+       0.99,
+       51.5331
+      ]
+     ],
+     "curve_now": 3.9506
+    },
+    {
+     "id": "venus-usd1",
+     "venue": "Venus",
+     "asset": "USD1",
+     "rate": 4.271,
+     "quoted": 4.271,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 546464,
+     "kink_room": 354586,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 959262,
+     "borrowed_usd": 412824,
+     "util": 0.4304,
+     "curve": [
+      [
+       0.5,
+       5.1251
+      ],
+      [
+       0.51,
+       5.2302
+      ],
+      [
+       0.52,
+       5.3355
+      ],
+      [
+       0.53,
+       5.4408
+      ],
+      [
+       0.54,
+       5.5463
+      ],
+      [
+       0.55,
+       5.6518
+      ],
+      [
+       0.56,
+       5.7575
+      ],
+      [
+       0.57,
+       5.8632
+      ],
+      [
+       0.58,
+       5.9691
+      ],
+      [
+       0.59,
+       6.0751
+      ],
+      [
+       0.6,
+       6.1811
+      ],
+      [
+       0.61,
+       6.2873
+      ],
+      [
+       0.62,
+       6.3936
+      ],
+      [
+       0.63,
+       6.5
+      ],
+      [
+       0.64,
+       6.6065
+      ],
+      [
+       0.65,
+       6.7131
+      ],
+      [
+       0.66,
+       6.8198
+      ],
+      [
+       0.67,
+       6.9267
+      ],
+      [
+       0.68,
+       7.0336
+      ],
+      [
+       0.69,
+       7.1406
+      ],
+      [
+       0.7,
+       7.2478
+      ],
+      [
+       0.71,
+       7.355
+      ],
+      [
+       0.72,
+       7.4624
+      ],
+      [
+       0.73,
+       7.5698
+      ],
+      [
+       0.74,
+       7.6774
+      ],
+      [
+       0.75,
+       7.7851
+      ],
+      [
+       0.76,
+       7.8929
+      ],
+      [
+       0.77,
+       8.0007
+      ],
+      [
+       0.78,
+       8.1087
+      ],
+      [
+       0.79,
+       8.2168
+      ],
+      [
+       0.8,
+       8.3251
+      ],
+      [
+       0.81,
+       11.0658
+      ],
+      [
+       0.82,
+       13.8756
+      ],
+      [
+       0.83,
+       16.7563
+      ],
+      [
+       0.84,
+       19.7097
+      ],
+      [
+       0.85,
+       22.7376
+      ],
+      [
+       0.86,
+       25.8419
+      ],
+      [
+       0.87,
+       29.0244
+      ],
+      [
+       0.88,
+       32.2873
+      ],
+      [
+       0.89,
+       35.6324
+      ],
+      [
+       0.9,
+       39.0618
+      ],
+      [
+       0.91,
+       42.5777
+      ],
+      [
+       0.92,
+       46.1823
+      ],
+      [
+       0.93,
+       49.8777
+      ],
+      [
+       0.94,
+       53.6663
+      ],
+      [
+       0.95,
+       57.5504
+      ],
+      [
+       0.96,
+       61.5324
+      ],
+      [
+       0.97,
+       65.6148
+      ],
+      [
+       0.98,
+       69.8
+      ],
+      [
+       0.99,
+       74.0907
+      ]
+     ],
+     "curve_now": 4.3958
+    },
+    {
+     "id": "lista-u",
+     "venue": "Lista",
+     "asset": "U",
+     "rate": 2.521,
+     "quoted": 2.24,
+     "days": 273,
+     "lt": 0.86,
+     "ltv": 0.774,
+     "free": 1770757,
+     "kink_room": 542720,
+     "kink_label": "rate kink at 90%",
+     "supply_usd": 12280369,
+     "borrowed_usd": 10509612,
+     "util": 0.8558,
+     "curve": [
+      [
+       0.5,
+       1.5465
+      ],
+      [
+       0.51,
+       1.5658
+      ],
+      [
+       0.52,
+       1.5852
+      ],
+      [
+       0.53,
+       1.6045
+      ],
+      [
+       0.54,
+       1.6238
+      ],
+      [
+       0.55,
+       1.6432
+      ],
+      [
+       0.56,
+       1.6625
+      ],
+      [
+       0.57,
+       1.6819
+      ],
+      [
+       0.58,
+       1.7012
+      ],
+      [
+       0.59,
+       1.7205
+      ],
+      [
+       0.6,
+       1.7399
+      ],
+      [
+       0.61,
+       1.7592
+      ],
+      [
+       0.62,
+       1.7785
+      ],
+      [
+       0.63,
+       1.7979
+      ],
+      [
+       0.64,
+       1.8172
+      ],
+      [
+       0.65,
+       1.8365
+      ],
+      [
+       0.66,
+       1.8559
+      ],
+      [
+       0.67,
+       1.8752
+      ],
+      [
+       0.68,
+       1.8946
+      ],
+      [
+       0.69,
+       1.9139
+      ],
+      [
+       0.7,
+       1.9332
+      ],
+      [
+       0.71,
+       1.9526
+      ],
+      [
+       0.72,
+       1.9719
+      ],
+      [
+       0.73,
+       1.9912
+      ],
+      [
+       0.74,
+       2.0106
+      ],
+      [
+       0.75,
+       2.0299
+      ],
+      [
+       0.76,
+       2.0493
+      ],
+      [
+       0.77,
+       2.0686
+      ],
+      [
+       0.78,
+       2.0879
+      ],
+      [
+       0.79,
+       2.1073
+      ],
+      [
+       0.8,
+       2.1266
+      ],
+      [
+       0.81,
+       2.1459
+      ],
+      [
+       0.82,
+       2.1653
+      ],
+      [
+       0.83,
+       2.1846
+      ],
+      [
+       0.84,
+       2.204
+      ],
+      [
+       0.85,
+       2.2233
+      ],
+      [
+       0.86,
+       2.2426
+      ],
+      [
+       0.87,
+       2.262
+      ],
+      [
+       0.88,
+       2.2813
+      ],
+      [
+       0.89,
+       2.3007
+      ],
+      [
+       0.9,
+       2.32
+      ],
+      [
+       0.91,
+       3.0161
+      ],
+      [
+       0.92,
+       3.7122
+      ],
+      [
+       0.93,
+       4.4083
+      ],
+      [
+       0.94,
+       5.1045
+      ],
+      [
+       0.95,
+       5.8007
+      ],
+      [
+       0.96,
+       6.4969
+      ],
+      [
+       0.97,
+       7.1931
+      ],
+      [
+       0.98,
+       7.8894
+      ],
+      [
+       0.99,
+       8.5858
+      ]
+     ],
+     "curve_now": 2.2345
+    },
+    {
+     "id": "lista-lisusd",
+     "venue": "Lista",
+     "asset": "lisUSD",
+     "rate": 1.247,
+     "quoted": 1.726,
+     "days": 123,
+     "lt": 0.86,
+     "ltv": 0.774,
+     "free": 566834,
+     "kink_room": 489794,
+     "kink_label": "rate kink at 90%",
+     "supply_usd": 770399,
+     "borrowed_usd": 203564,
+     "util": 0.2642,
+     "curve": [
+      [
+       0.5,
+       2.6054
+      ],
+      [
+       0.51,
+       2.6395
+      ],
+      [
+       0.52,
+       2.6736
+      ],
+      [
+       0.53,
+       2.7078
+      ],
+      [
+       0.54,
+       2.742
+      ],
+      [
+       0.55,
+       2.7762
+      ],
+      [
+       0.56,
+       2.8105
+      ],
+      [
+       0.57,
+       2.8449
+      ],
+      [
+       0.58,
+       2.8792
+      ],
+      [
+       0.59,
+       2.9136
+      ],
+      [
+       0.6,
+       2.9481
+      ],
+      [
+       0.61,
+       2.9826
+      ],
+      [
+       0.62,
+       3.0171
+      ],
+      [
+       0.63,
+       3.0516
+      ],
+      [
+       0.64,
+       3.0862
+      ],
+      [
+       0.65,
+       3.1209
+      ],
+      [
+       0.66,
+       3.1556
+      ],
+      [
+       0.67,
+       3.1903
+      ],
+      [
+       0.68,
+       3.2251
+      ],
+      [
+       0.69,
+       3.2599
+      ],
+      [
+       0.7,
+       3.2947
+      ],
+      [
+       0.71,
+       3.3296
+      ],
+      [
+       0.72,
+       3.3645
+      ],
+      [
+       0.73,
+       3.3995
+      ],
+      [
+       0.74,
+       3.4345
+      ],
+      [
+       0.75,
+       3.4695
+      ],
+      [
+       0.76,
+       3.5046
+      ],
+      [
+       0.77,
+       3.5397
+      ],
+      [
+       0.78,
+       3.5749
+      ],
+      [
+       0.79,
+       3.6101
+      ],
+      [
+       0.8,
+       3.6453
+      ],
+      [
+       0.81,
+       3.6806
+      ],
+      [
+       0.82,
+       3.7159
+      ],
+      [
+       0.83,
+       3.7513
+      ],
+      [
+       0.84,
+       3.7867
+      ],
+      [
+       0.85,
+       3.8221
+      ],
+      [
+       0.86,
+       3.8576
+      ],
+      [
+       0.87,
+       3.8932
+      ],
+      [
+       0.88,
+       3.9287
+      ],
+      [
+       0.89,
+       3.9643
+      ],
+      [
+       0.9,
+       4.0
+      ],
+      [
+       0.91,
+       5.2274
+      ],
+      [
+       0.92,
+       6.4678
+      ],
+      [
+       0.93,
+       7.7213
+      ],
+      [
+       0.94,
+       8.9881
+      ],
+      [
+       0.95,
+       10.2682
+      ],
+      [
+       0.96,
+       11.5619
+      ],
+      [
+       0.97,
+       12.8692
+      ],
+      [
+       0.98,
+       14.1904
+      ],
+      [
+       0.99,
+       15.5256
+      ]
+     ],
+     "curve_now": 1.8128
+    }
+   ],
+   "branches": [
+    {
+     "id": "lista-u-usdf",
+     "debt": "Lista U",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Lista U",
+      "USDT",
+      "mint USDF",
+      "short BTC on Aster"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -4.651,
+       "funding": 5.853,
+       "margin": 4.428,
+       "costs": -1.056
+      },
+      "net": 4.574
+     },
+     "net": 4.574,
+     "delta1_net": null,
+     "dial": {
+      "add": 19.85,
+      "worst": -1.57
+     },
+     "ceiling": {
+      "usd": 216796,
+      "binding": "USDF cap per account",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 959732,
+        "per": "debt",
+        "raw": 1770757
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4308265,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 294149,
+        "per": "debt",
+        "raw": 542720
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 216796,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 263546,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.521,
+      "funding": 4.23,
+      "margin_yield": 9.6,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 0.0
+     },
+     "deps": [
+      "U \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "lista-lisusd-aster",
+     "debt": "Lista lisUSD",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Lista lisUSD",
+      "short BTC on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "lisUSD>USDT",
+      "lisUSD>USDT psm",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -2.301,
+       "funding": 5.853,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.497
+     },
+     "net": 2.497,
+     "delta1_net": 2.5,
+     "dial": {
+      "add": 19.85,
+      "worst": -1.57
+     },
+     "ceiling": {
+      "usd": 265463,
+      "binding": "Lista lisUSD rate kink at 90%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 307218,
+        "per": "debt",
+        "raw": 566834
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4308265,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Lista lisUSD rate kink at 90%",
+        "usd": 265463,
+        "per": "debt",
+        "raw": 489794
+       }
+      ]
+     },
+     "deps": [
+      "lisUSD \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "Out of lisUSD is costly and slow: past the $451k pool, lisUSD \u2192 USDT goes through Lista's PSM at 2% and $500k a day. Into lisUSD is free: USDT \u2192 lisUSD 1:1.",
+     "exit": [
+      "USDT>lisUSD psm"
+     ],
+     "inputs": {
+      "rate": 1.247,
+      "funding": 4.23,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "lista-u-hyperliquid",
+     "debt": "Lista U",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Lista U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BTC on Hyperliquid"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -4.651,
+       "funding": 8.164,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.457
+     },
+     "net": 2.457,
+     "delta1_net": 2.46,
+     "dial": {
+      "add": 19.85,
+      "worst": -1.57
+     },
+     "ceiling": {
+      "usd": 263546,
+      "binding": "U \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 959732,
+        "per": "debt",
+        "raw": 1770757
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4308265,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 294149,
+        "per": "debt",
+        "raw": 542720
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 263546,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.9,
+      "longs_pay": 80.8,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.521,
+      "funding": 5.9,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "lista-u-lighter-main",
+     "debt": "Lista U",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Lista U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BTC on Lighter"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -4.651,
+       "funding": 7.431,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 1.724
+     },
+     "net": 1.724,
+     "delta1_net": 1.73,
+     "dial": {
+      "add": 19.85,
+      "worst": -1.57
+     },
+     "ceiling": {
+      "usd": 263546,
+      "binding": "U \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 959732,
+        "per": "debt",
+        "raw": 1770757
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4308265,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 294149,
+        "per": "debt",
+        "raw": 542720
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 263546,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.37,
+      "longs_pay": 75.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.521,
+      "funding": 5.37,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-u-usdf",
+     "debt": "Venus U",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus U",
+      "USDT",
+      "mint USDF",
+      "short BTC on Aster"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.198,
+       "funding": 4.966,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 1.468
+     },
+     "net": 1.468,
+     "delta1_net": null,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 255556,
+      "binding": "USDF cap per account",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 4.23,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     },
+     "deps": [
+      "U \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-usd1-usdf",
+     "debt": "Venus USD1",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "mint USDF",
+      "short BTC on Aster"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.685,
+       "funding": 4.966,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 0.981
+     },
+     "net": 0.981,
+     "delta1_net": null,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 210986,
+      "binding": "USD1 \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 4.23,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     },
+     "deps": [
+      "USD1 \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-usdt-usdf",
+     "debt": "Venus USDT",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus USDT",
+      "mint USDF",
+      "short BTC on Aster"
+     ],
+     "legs": [
+      "USDT>USDF"
+     ],
+     "loop": [
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -7.278,
+       "funding": 4.966,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 0.388
+     },
+     "net": 0.388,
+     "delta1_net": null,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 255556,
+      "binding": "USDF cap per account",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       }
+      ]
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 4.23,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     },
+     "deps": [
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "lista-u-aster",
+     "debt": "Lista U",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Lista U",
+      "short BTC on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.384,
+      "debt": 1.845,
+      "short": 1.384,
+      "margin": 0.461,
+      "recycled": 1.384,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -4.651,
+       "funding": 5.853,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 0.146
+     },
+     "net": 0.146,
+     "delta1_net": 0.15,
+     "dial": {
+      "add": 19.85,
+      "worst": -1.57
+     },
+     "ceiling": {
+      "usd": 294149,
+      "binding": "Lista U rate kink at 90%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 959732,
+        "per": "debt",
+        "raw": 1770757
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4308265,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Lista U rate kink at 90%",
+        "usd": 294149,
+        "per": "debt",
+        "raw": 542720
+       }
+      ]
+     },
+     "deps": [
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 2.521,
+      "funding": 4.23,
+      "margin_yield": 0.0,
+      "lt": 0.86,
+      "ltv": 0.774,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "btcb-raw-aster",
+     "debt": "BTCB on Aster",
+     "hedge": "aster",
+     "kind": "raw",
+     "title": "Raw BTCB as margin",
+     "path": [
+      "BTCB",
+      "deposit on Aster as margin",
+      "short BTC on Aster"
+     ],
+     "legs": [],
+     "loop": [],
+     "exit": [],
+     "pos": {
+      "collateral": 1.0,
+      "debt": 0.0,
+      "short": 1.0,
+      "margin": 1.0,
+      "recycled": 0.0,
+      "hedge_lev": 1.0
+     },
+     "carry": {
+      "legs": {},
+      "net": 0.0
+     },
+     "net": 0.0,
+     "delta1_net": null,
+     "dial": {
+      "add": 14.34,
+      "worst": -1.13
+     },
+     "ceiling": {
+      "usd": 10270000,
+      "binding": "BTCB exit, 5%",
+      "all": [
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 10270000,
+        "per": "collateral",
+        "raw": 10270000
+       }
+      ]
+     },
+     "inputs": {
+      "rate": 0.0,
+      "funding": 4.23,
+      "margin_yield": 0.0,
+      "lt": null,
+      "ltv": 0.0,
+      "yield": 0.0,
+      "haircut": 0.95
+     },
+     "book": {
+      "0.5": 24115242,
+      "1": 41845233,
+      "2": 60655946
+     },
+     "deps": [
+      "BTCB margin counts at 95% on Aster"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null
+    },
+    {
+     "id": "venus-u-hyperliquid",
+     "debt": "Venus U",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BTC on Hyperliquid"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.198,
+       "funding": 6.926,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -0.328
+     },
+     "net": -0.328,
+     "delta1_net": -0.32,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 310664,
+      "binding": "U \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.9,
+      "longs_pay": 80.8,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 5.9,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-usd1-hyperliquid",
+     "debt": "Venus USD1",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BTC on Hyperliquid"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.685,
+       "funding": 6.926,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -0.815
+     },
+     "net": -0.815,
+     "delta1_net": -0.81,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 210986,
+      "binding": "USD1 \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.9,
+      "longs_pay": 80.8,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 5.9,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-u-lighter-main",
+     "debt": "Venus U",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BTC on Lighter"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.198,
+       "funding": 6.304,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -0.95
+     },
+     "net": -0.95,
+     "delta1_net": -0.94,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 310664,
+      "binding": "U \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.37,
+      "longs_pay": 75.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 5.37,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-usdt-hyperliquid",
+     "debt": "Venus USDT",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short BTC on Hyperliquid"
+     ],
+     "legs": [
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -7.278,
+       "funding": 6.926,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -1.408
+     },
+     "net": -1.408,
+     "delta1_net": -1.4,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 4724200,
+      "binding": "BTCB exit, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum"
+     ],
+     "funding": {
+      "apr": 5.9,
+      "longs_pay": 80.8,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 5.9,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-usd1-lighter-main",
+     "debt": "Venus USD1",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BTC on Lighter"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.685,
+       "funding": 6.304,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -1.437
+     },
+     "net": -1.437,
+     "delta1_net": -1.43,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 210986,
+      "binding": "USD1 \u2192 USDT per day",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.37,
+      "longs_pay": 75.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 5.37,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-usdt-lighter-main",
+     "debt": "Venus USDT",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short BTC on Lighter"
+     ],
+     "legs": [
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -7.278,
+       "funding": 6.304,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -2.03
+     },
+     "net": -2.03,
+     "delta1_net": -2.03,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 4724200,
+      "binding": "BTCB exit, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum"
+     ],
+     "funding": {
+      "apr": 5.37,
+      "longs_pay": 75.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 5.37,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-u-aster",
+     "debt": "Venus U",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus U",
+      "short BTC on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "U>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.198,
+       "funding": 4.966,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -2.289
+     },
+     "net": -2.289,
+     "delta1_net": -2.29,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 3238928,
+      "binding": "Venus U rate kink at 80%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       }
+      ]
+     },
+     "deps": [
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 4.23,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-usd1-aster",
+     "debt": "Venus USD1",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus USD1",
+      "short BTC on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "USD1>USDT",
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -6.685,
+       "funding": 4.966,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -2.775
+     },
+     "net": -2.775,
+     "delta1_net": -2.77,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 226541,
+      "binding": "Venus USD1 rate kink at 80%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       }
+      ]
+     },
+     "deps": [
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 4.23,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    },
+    {
+     "id": "venus-usdt-aster",
+     "debt": "Venus USDT",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus USDT",
+      "short BTC on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "USDT>BTCB"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 0.0,
+       "debt": -7.278,
+       "funding": 4.966,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": -3.369
+     },
+     "net": -3.369,
+     "delta1_net": -3.37,
+     "dial": {
+      "add": 16.84,
+      "worst": -1.33
+     },
+     "ceiling": {
+      "usd": 4724200,
+      "binding": "BTCB exit, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "BTCB exit, 5%",
+        "usd": 4724200,
+        "per": "collateral",
+        "raw": 10270000
+       },
+       {
+        "name": "Venus BTCB cap",
+        "usd": 216668838,
+        "per": "collateral",
+        "raw": 471019213
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [],
+     "funding": {
+      "apr": 4.23,
+      "longs_pay": 79.7,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": null,
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 4.23,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 0.0
+     }
+    }
+   ],
+   "dial_table": [
+    {
+     "hours": 1,
+     "trailing": 16.84,
+     "worst_window": 7.17,
+     "worst_trade": -1.33,
+     "trades": 19
+    },
+    {
+     "hours": 4,
+     "trailing": 4.99,
+     "worst_window": 3.76,
+     "worst_trade": -4.31,
+     "trades": 17
+    },
+    {
+     "hours": 12,
+     "trailing": 5.69,
+     "worst_window": 1.77,
+     "worst_trade": -2.67,
+     "trades": 16
+    },
+    {
+     "hours": 24,
+     "trailing": 12.54,
+     "worst_window": 0.78,
+     "worst_trade": -5.04,
+     "trades": 16
+    }
+   ],
+   "rejected": [
+    {
+     "what": "BTCB/U Lista",
+     "why": "gate 2: borrow index never moved, nobody has borrowed from it"
+    },
+    {
+     "what": "BTCB/USD1 Lista",
+     "why": "gate 2: borrow index never moved, nobody has borrowed from it"
+    },
+    {
+     "what": "BTCB/BNB Lista",
+     "why": "gate 0: not a stable debt. Same-asset or cross-asset borrows break the delta-1 model"
+    },
+    {
+     "what": "BTCB/XAUt Lista",
+     "why": "gate 0: not a stable debt. Same-asset or cross-asset borrows break the delta-1 model"
+    },
+    {
+     "what": "BTCB Venus USDT / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Venus U / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Venus USD1 / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Venus lisUSD / hyperliquid",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "BTCB Venus lisUSD / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Venus lisUSD / lighter-main",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "BTCB Lista USDT / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Lista U / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Lista lisUSD / hyperliquid",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "BTCB Lista lisUSD / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "BTCB Lista lisUSD / lighter-main",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "BTCB Lista USD1 / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    }
+   ],
+   "sourced": {
+    "usdf_apy": {
+     "value": 9.6,
+     "source": "Aster Earn page, Trade APY, read by Root 2026-09-18"
+    },
+    "usdf_cap": {
+     "value": 100000,
+     "source": "docs.asterdex.com Trade & Earn: capped at 100,000 USDF per account"
+    },
+    "usdf_volume": {
+     "value": 50000,
+     "source": "Trade & Earn: 2+ days a week, 50,000 USDT weekly volume"
+    },
+    "aster_maker": {
+     "value": 0.0,
+     "source": "docs.asterdex.com fees: USDT perps 0% maker, 0.04% taker"
+    },
+    "aster_taker": {
+     "value": 0.04,
+     "source": "docs.asterdex.com fees"
+    },
+    "mint_rate": {
+     "value": 0.962954865386,
+     "source": "ListaStakeManager.convertBnbToSnBnb(1e18), 2026-09-18"
+    },
+    "venus_slis_cap": {
+     "value": 2000.0,
+     "source": "Comptroller.supplyCaps(vslisBNB), 2026-09-18"
+    },
+    "venus_slis_used": {
+     "value": 623.3,
+     "source": "vslisBNB totalSupply x exchangeRateStored, 2026-09-18"
+    },
+    "bnb_usd": {
+     "value": 731.1,
+     "source": "slisBNB/WBNB and WBNB/USDT pool spot, fetch_depth.py 2026-09-17"
+    },
+    "slis_per_bnb": {
+     "value": 1.038443,
+     "source": "ListaStakeManager.convertSnBnbToBnb(1e18)"
+    },
+    "dial_equity": {
+     "value": 16.84,
+     "source": "variable hedge, trailing 365 days (2025-09-16 to 2026-09-16), BTC, 12 h cuts, net of funding, taker fills, 1.174x short"
+    },
+    "dial_short": {
+     "value": 1.174,
+     "source": "short multiple the dial was measured at"
+    },
+    "dial_worst": {
+     "value": -1.33,
+     "source": "worst single trade in that window, % of equity"
+    },
+    "dial_trades": {
+     "value": 19,
+     "source": "trades in that window"
+    },
+    "dial_on": {
+     "value": 0.2,
+     "source": "% of hours the de-hedge is open"
+    },
+    "dial_edge": {
+     "value": 0.638,
+     "source": "median BTC move 1 h after a flush, %"
+    },
+    "dial_control": {
+     "value": 0.009,
+     "source": "median BTC move 1 h after a random minute, %"
+    },
+    "dial_decay": {
+     "value": "about three quarters in two years",
+     "source": "BNB window 64.3% (2024) to 13.5% (latest)"
+    },
+    "dial_windows": {
+     "value": "21 of 21",
+     "source": "rolling 12-month windows positive, full range +4.62% to +81.20%"
+    },
+    "dial_hours": {
+     "value": 1,
+     "source": "best trailing year among horizons whose worst rolling window is at least 12h's (+1.8%): 1h +16.8% (worst window +7.2%); 4h +5.0% (worst window +3.8%); 12h +5.7% (worst window +1.8%); 24h +12.5% (worst window +0.8%)"
+    }
+   }
+  },
+  "wBETH": {
+   "hedge": "ETH",
+   "risk": {
+    "alert": 0.05,
+    "falls": {
+     "minutes": 22,
+     "window": "2025-09-16 to 2026-09-16",
+     "worst25": {
+      "day": "2025-10-10",
+      "fall": 0.1325
+     },
+     "worst25_other": {
+      "day": "2026-01-31",
+      "fall": 0.0844
+     },
+     "worst24h": {
+      "day": "2025-10-10",
+      "fall": 0.2259
+     }
+    },
+    "falls_by": {
+     "lighter-main": {
+      "minutes": 22,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.1325
+      },
+      "worst25_other": {
+       "day": "2026-01-31",
+       "fall": 0.0844
+      },
+      "worst24h": {
+       "day": "2025-10-10",
+       "fall": 0.2259
+      }
+     },
+     "hyperliquid": {
+      "minutes": 7,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.1123
+      },
+      "worst25_other": {
+       "day": "2026-01-31",
+       "fall": 0.0766
+      },
+      "worst24h": {
+       "day": "2025-10-10",
+       "fall": 0.2259
+      }
+     },
+     "aster": {
+      "minutes": 2,
+      "window": "2025-09-16 to 2026-09-16",
+      "worst25": {
+       "day": "2025-10-10",
+       "fall": 0.077
+      },
+      "worst25_other": {
+       "day": "2026-01-31",
+       "fall": 0.0615
+      },
+      "worst24h": {
+       "day": "2025-10-10",
+       "fall": 0.2259
+      }
+     }
+    },
+    "fastest": {
+     "m1": {
+      "day": "2025-10-10",
+      "fall": 0.0741
+     },
+     "m2": {
+      "day": "2025-10-10",
+      "fall": 0.077
+     }
+    },
+    "response": {
+     "lighter-main": {
+      "seconds": 1291,
+      "parts": "Lighter withdrawal 21.1 min (fast bridge limit $0) + deBridge Ethereum to BSC 27 s + repay"
+     },
+     "hyperliquid": {
+      "seconds": 395.1640000343323,
+      "parts": "Hyperliquid withdrawal 3.8 min median, 6.5 min at the 99th percentile (4,530 withdrawals over 3 days; 0.5% took over an hour) + relay Arbitrum to BSC 6 s + repay"
+     },
+     "aster": {
+      "seconds": 60,
+      "parts": "no bridge: Aster is on BSC, withdraw and repay in about a minute"
+     }
+    }
+   },
+   "collateral": {
+    "name": "wBETH",
+    "yield": 2.211,
+    "yield_label": "2.21%",
+    "yield_src": "DefiLlama binance-staked-eth, $8.58B TVL",
+    "exit5": 8900,
+    "venus_room": 8905556
+   },
+   "model": {
+    "equity": 1000.0,
+    "hedge_lev": 3.0,
+    "costs_pct": 1.056,
+    "ltv_rule": "target LTV = 90% of the liquidation threshold"
+   },
+   "funding": {
+    "Aster": {
+     "apr": 4.43,
+     "longs_pay": 82.0,
+     "n": 1086,
+     "days": 362,
+     "interval_h": 8.0
+    },
+    "Hyperliquid": {
+     "apr": 6.16,
+     "longs_pay": 83.2,
+     "n": 8682,
+     "days": 362,
+     "interval_h": 1.0
+    },
+    "Lighter": {
+     "apr": 5.38,
+     "longs_pay": 77.7,
+     "n": 8683,
+     "days": 362,
+     "interval_h": 1.0
+    }
+   },
+   "debts": [
+    {
+     "id": "venus-usdt",
+     "venue": "Venus",
+     "asset": "USDT",
+     "rate": 4.65,
+     "quoted": 4.65,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 58015555,
+     "kink_room": 33415403,
+     "kink_label": "rate kink at 84%",
+     "supply_usd": 192624356,
+     "borrowed_usd": 128389056,
+     "util": 0.6665,
+     "curve": [
+      [
+       0.5,
+       3.3268
+      ],
+      [
+       0.51,
+       3.3944
+      ],
+      [
+       0.52,
+       3.4621
+      ],
+      [
+       0.53,
+       3.5299
+      ],
+      [
+       0.54,
+       3.5976
+      ],
+      [
+       0.55,
+       3.6655
+      ],
+      [
+       0.56,
+       3.7333
+      ],
+      [
+       0.57,
+       3.8013
+      ],
+      [
+       0.58,
+       3.8692
+      ],
+      [
+       0.59,
+       3.9372
+      ],
+      [
+       0.6,
+       4.0053
+      ],
+      [
+       0.61,
+       4.0734
+      ],
+      [
+       0.62,
+       4.1415
+      ],
+      [
+       0.63,
+       4.2097
+      ],
+      [
+       0.64,
+       4.2779
+      ],
+      [
+       0.65,
+       4.3462
+      ],
+      [
+       0.66,
+       4.4145
+      ],
+      [
+       0.67,
+       4.4829
+      ],
+      [
+       0.68,
+       4.5513
+      ],
+      [
+       0.69,
+       4.6197
+      ],
+      [
+       0.7,
+       4.6882
+      ],
+      [
+       0.71,
+       4.7567
+      ],
+      [
+       0.72,
+       4.8253
+      ],
+      [
+       0.73,
+       4.8939
+      ],
+      [
+       0.74,
+       4.9626
+      ],
+      [
+       0.75,
+       5.0313
+      ],
+      [
+       0.76,
+       5.1001
+      ],
+      [
+       0.77,
+       5.1689
+      ],
+      [
+       0.78,
+       5.2378
+      ],
+      [
+       0.79,
+       5.3067
+      ],
+      [
+       0.8,
+       5.3756
+      ],
+      [
+       0.81,
+       5.4446
+      ],
+      [
+       0.82,
+       5.5136
+      ],
+      [
+       0.83,
+       5.5827
+      ],
+      [
+       0.84,
+       5.6518
+      ],
+      [
+       0.85,
+       5.9162
+      ],
+      [
+       0.86,
+       6.1811
+      ],
+      [
+       0.87,
+       6.4468
+      ],
+      [
+       0.88,
+       6.7131
+      ],
+      [
+       0.89,
+       6.9801
+      ],
+      [
+       0.9,
+       7.2478
+      ],
+      [
+       0.91,
+       7.5161
+      ],
+      [
+       0.92,
+       7.7851
+      ],
+      [
+       0.93,
+       12.2514
+      ],
+      [
+       0.94,
+       16.9023
+      ],
+      [
+       0.95,
+       21.7453
+      ],
+      [
+       0.96,
+       26.7883
+      ],
+      [
+       0.97,
+       32.0397
+      ],
+      [
+       0.98,
+       37.508
+      ],
+      [
+       0.99,
+       43.2021
+      ]
+     ],
+     "curve_now": 4.4591
+    },
+    {
+     "id": "venus-u",
+     "venue": "Venus",
+     "asset": "U",
+     "rate": 3.96,
+     "quoted": 3.96,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 10590509,
+     "kink_room": 5069626,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 28188036,
+     "borrowed_usd": 17480803,
+     "util": 0.6201,
+     "curve": [
+      [
+       0.5,
+       3.1732
+      ],
+      [
+       0.51,
+       3.2377
+      ],
+      [
+       0.52,
+       3.3022
+      ],
+      [
+       0.53,
+       3.3668
+      ],
+      [
+       0.54,
+       3.4314
+      ],
+      [
+       0.55,
+       3.496
+      ],
+      [
+       0.56,
+       3.5607
+      ],
+      [
+       0.57,
+       3.6254
+      ],
+      [
+       0.58,
+       3.6901
+      ],
+      [
+       0.59,
+       3.7549
+      ],
+      [
+       0.6,
+       3.8198
+      ],
+      [
+       0.61,
+       3.8847
+      ],
+      [
+       0.62,
+       3.9496
+      ],
+      [
+       0.63,
+       4.0146
+      ],
+      [
+       0.64,
+       4.0796
+      ],
+      [
+       0.65,
+       4.1446
+      ],
+      [
+       0.66,
+       4.2097
+      ],
+      [
+       0.67,
+       4.2748
+      ],
+      [
+       0.68,
+       4.34
+      ],
+      [
+       0.69,
+       4.4052
+      ],
+      [
+       0.7,
+       4.4704
+      ],
+      [
+       0.71,
+       4.5357
+      ],
+      [
+       0.72,
+       4.601
+      ],
+      [
+       0.73,
+       4.6664
+      ],
+      [
+       0.74,
+       4.7318
+      ],
+      [
+       0.75,
+       4.7973
+      ],
+      [
+       0.76,
+       4.8627
+      ],
+      [
+       0.77,
+       4.9283
+      ],
+      [
+       0.78,
+       4.9938
+      ],
+      [
+       0.79,
+       5.0595
+      ],
+      [
+       0.8,
+       5.1251
+      ],
+      [
+       0.81,
+       5.7575
+      ],
+      [
+       0.82,
+       6.3936
+      ],
+      [
+       0.83,
+       7.0336
+      ],
+      [
+       0.84,
+       7.6774
+      ],
+      [
+       0.85,
+       8.3251
+      ],
+      [
+       0.86,
+       8.9766
+      ],
+      [
+       0.87,
+       9.6321
+      ],
+      [
+       0.88,
+       10.2915
+      ],
+      [
+       0.89,
+       10.9548
+      ],
+      [
+       0.9,
+       11.6221
+      ],
+      [
+       0.91,
+       15.48
+      ],
+      [
+       0.92,
+       19.4707
+      ],
+      [
+       0.93,
+       23.599
+      ],
+      [
+       0.94,
+       27.8696
+      ],
+      [
+       0.95,
+       32.2873
+      ],
+      [
+       0.96,
+       36.8571
+      ],
+      [
+       0.97,
+       41.5844
+      ],
+      [
+       0.98,
+       46.4746
+      ],
+      [
+       0.99,
+       51.5331
+      ]
+     ],
+     "curve_now": 3.9506
+    },
+    {
+     "id": "venus-usd1",
+     "venue": "Venus",
+     "asset": "USD1",
+     "rate": 4.271,
+     "quoted": 4.271,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 546464,
+     "kink_room": 354586,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 959262,
+     "borrowed_usd": 412824,
+     "util": 0.4304,
+     "curve": [
+      [
+       0.5,
+       5.1251
+      ],
+      [
+       0.51,
+       5.2302
+      ],
+      [
+       0.52,
+       5.3355
+      ],
+      [
+       0.53,
+       5.4408
+      ],
+      [
+       0.54,
+       5.5463
+      ],
+      [
+       0.55,
+       5.6518
+      ],
+      [
+       0.56,
+       5.7575
+      ],
+      [
+       0.57,
+       5.8632
+      ],
+      [
+       0.58,
+       5.9691
+      ],
+      [
+       0.59,
+       6.0751
+      ],
+      [
+       0.6,
+       6.1811
+      ],
+      [
+       0.61,
+       6.2873
+      ],
+      [
+       0.62,
+       6.3936
+      ],
+      [
+       0.63,
+       6.5
+      ],
+      [
+       0.64,
+       6.6065
+      ],
+      [
+       0.65,
+       6.7131
+      ],
+      [
+       0.66,
+       6.8198
+      ],
+      [
+       0.67,
+       6.9267
+      ],
+      [
+       0.68,
+       7.0336
+      ],
+      [
+       0.69,
+       7.1406
+      ],
+      [
+       0.7,
+       7.2478
+      ],
+      [
+       0.71,
+       7.355
+      ],
+      [
+       0.72,
+       7.4624
+      ],
+      [
+       0.73,
+       7.5698
+      ],
+      [
+       0.74,
+       7.6774
+      ],
+      [
+       0.75,
+       7.7851
+      ],
+      [
+       0.76,
+       7.8929
+      ],
+      [
+       0.77,
+       8.0007
+      ],
+      [
+       0.78,
+       8.1087
+      ],
+      [
+       0.79,
+       8.2168
+      ],
+      [
+       0.8,
+       8.3251
+      ],
+      [
+       0.81,
+       11.0658
+      ],
+      [
+       0.82,
+       13.8756
+      ],
+      [
+       0.83,
+       16.7563
+      ],
+      [
+       0.84,
+       19.7097
+      ],
+      [
+       0.85,
+       22.7376
+      ],
+      [
+       0.86,
+       25.8419
+      ],
+      [
+       0.87,
+       29.0244
+      ],
+      [
+       0.88,
+       32.2873
+      ],
+      [
+       0.89,
+       35.6324
+      ],
+      [
+       0.9,
+       39.0618
+      ],
+      [
+       0.91,
+       42.5777
+      ],
+      [
+       0.92,
+       46.1823
+      ],
+      [
+       0.93,
+       49.8777
+      ],
+      [
+       0.94,
+       53.6663
+      ],
+      [
+       0.95,
+       57.5504
+      ],
+      [
+       0.96,
+       61.5324
+      ],
+      [
+       0.97,
+       65.6148
+      ],
+      [
+       0.98,
+       69.8
+      ],
+      [
+       0.99,
+       74.0907
+      ]
+     ],
+     "curve_now": 4.3958
+    },
+    {
+     "id": "venus-lisusd",
+     "venue": "Venus",
+     "asset": "lisUSD",
+     "rate": 5.404,
+     "quoted": 5.404,
+     "days": 365,
+     "lt": 0.8,
+     "ltv": 0.72,
+     "free": 168345,
+     "kink_room": 97104,
+     "kink_label": "rate kink at 80%",
+     "supply_usd": 356585,
+     "borrowed_usd": 188164,
+     "util": 0.5277,
+     "curve": [
+      [
+       0.5,
+       5.1251
+      ],
+      [
+       0.51,
+       5.2302
+      ],
+      [
+       0.52,
+       5.3355
+      ],
+      [
+       0.53,
+       5.4408
+      ],
+      [
+       0.54,
+       5.5463
+      ],
+      [
+       0.55,
+       5.6518
+      ],
+      [
+       0.56,
+       5.7575
+      ],
+      [
+       0.57,
+       5.8632
+      ],
+      [
+       0.58,
+       5.9691
+      ],
+      [
+       0.59,
+       6.0751
+      ],
+      [
+       0.6,
+       6.1811
+      ],
+      [
+       0.61,
+       6.2873
+      ],
+      [
+       0.62,
+       6.3936
+      ],
+      [
+       0.63,
+       6.5
+      ],
+      [
+       0.64,
+       6.6065
+      ],
+      [
+       0.65,
+       6.7131
+      ],
+      [
+       0.66,
+       6.8198
+      ],
+      [
+       0.67,
+       6.9267
+      ],
+      [
+       0.68,
+       7.0336
+      ],
+      [
+       0.69,
+       7.1406
+      ],
+      [
+       0.7,
+       7.2478
+      ],
+      [
+       0.71,
+       7.355
+      ],
+      [
+       0.72,
+       7.4624
+      ],
+      [
+       0.73,
+       7.5698
+      ],
+      [
+       0.74,
+       7.6774
+      ],
+      [
+       0.75,
+       7.7851
+      ],
+      [
+       0.76,
+       7.8929
+      ],
+      [
+       0.77,
+       8.0007
+      ],
+      [
+       0.78,
+       8.1087
+      ],
+      [
+       0.79,
+       8.2168
+      ],
+      [
+       0.8,
+       8.3251
+      ],
+      [
+       0.81,
+       11.0658
+      ],
+      [
+       0.82,
+       13.8756
+      ],
+      [
+       0.83,
+       16.7563
+      ],
+      [
+       0.84,
+       19.7097
+      ],
+      [
+       0.85,
+       22.7376
+      ],
+      [
+       0.86,
+       25.8419
+      ],
+      [
+       0.87,
+       29.0244
+      ],
+      [
+       0.88,
+       32.2873
+      ],
+      [
+       0.89,
+       35.6324
+      ],
+      [
+       0.9,
+       39.0618
+      ],
+      [
+       0.91,
+       42.5777
+      ],
+      [
+       0.92,
+       46.1823
+      ],
+      [
+       0.93,
+       49.8777
+      ],
+      [
+       0.94,
+       53.6663
+      ],
+      [
+       0.95,
+       57.5504
+      ],
+      [
+       0.96,
+       61.5324
+      ],
+      [
+       0.97,
+       65.6148
+      ],
+      [
+       0.98,
+       69.8
+      ],
+      [
+       0.99,
+       74.0907
+      ]
+     ],
+     "curve_now": 5.4164
+    }
+   ],
+   "branches": [
+    {
+     "id": "venus-u-usdf",
+     "debt": "Venus U",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus U",
+      "USDT",
+      "mint USDF",
+      "short ETH on Aster"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.198,
+       "funding": 5.2,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 6.509
+     },
+     "net": 6.509,
+     "delta1_net": null,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 4.43,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     },
+     "deps": [
+      "U \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-usd1-usdf",
+     "debt": "Venus USD1",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "mint USDF",
+      "short ETH on Aster"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDF"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.685,
+       "funding": 5.2,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 6.022
+     },
+     "net": 6.022,
+     "delta1_net": null,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 4.43,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     },
+     "deps": [
+      "USD1 \u2192 USDT",
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-usdt-usdf",
+     "debt": "Venus USDT",
+     "hedge": "aster",
+     "kind": "usdf",
+     "title": "USDF on Aster",
+     "path": [
+      "Venus USDT",
+      "mint USDF",
+      "short ETH on Aster"
+     ],
+     "legs": [
+      "USDT>USDF"
+     ],
+     "loop": [
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -7.278,
+       "funding": 5.2,
+       "margin": 3.757,
+       "costs": -1.056
+      },
+      "net": 5.429
+     },
+     "net": 5.429,
+     "delta1_net": null,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       },
+       {
+        "name": "USDF cap per account",
+        "usd": 255556,
+        "per": "margin",
+        "raw": 100000
+       }
+      ]
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 4.43,
+      "margin_yield": 9.6,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     },
+     "deps": [
+      "$50k volume on 2+ days a week"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     }
+    },
+    {
+     "id": "venus-u-hyperliquid",
+     "debt": "Venus U",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short ETH on Hyperliquid"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.198,
+       "funding": 7.231,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 4.784
+     },
+     "net": 4.784,
+     "delta1_net": 4.79,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 6.16,
+      "longs_pay": 83.2,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 6.16,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-usd1-hyperliquid",
+     "debt": "Venus USD1",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short ETH on Hyperliquid"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.685,
+       "funding": 7.231,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 4.297
+     },
+     "net": 4.297,
+     "delta1_net": 4.3,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum",
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 6.16,
+      "longs_pay": 83.2,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 6.16,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-u-lighter-main",
+     "debt": "Venus U",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus U",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short ETH on Lighter"
+     ],
+     "legs": [
+      "U>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "U>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.198,
+       "funding": 6.316,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 3.868
+     },
+     "net": 3.868,
+     "delta1_net": 3.86,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       },
+       {
+        "name": "U \u2192 USDT per day",
+        "usd": 310664,
+        "per": "debt",
+        "raw": 486257
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.38,
+      "longs_pay": 77.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 5.38,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-usdt-hyperliquid",
+     "debt": "Venus USDT",
+     "hedge": "hyperliquid",
+     "kind": "bridged",
+     "title": "Hyperliquid via USDC",
+     "path": [
+      "Venus USDT",
+      "USDC",
+      "bridge \u2192 Arbitrum",
+      "short ETH on Hyperliquid"
+     ],
+     "legs": [
+      "USDT>USDC",
+      "bridge-arb"
+     ],
+     "loop": [
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -7.278,
+       "funding": 7.231,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 3.704
+     },
+     "net": 3.704,
+     "delta1_net": 3.7,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Arbitrum"
+     ],
+     "funding": {
+      "apr": 6.16,
+      "longs_pay": 83.2,
+      "n": 8682,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 6.16,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-usd1-lighter-main",
+     "debt": "Venus USD1",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus USD1",
+      "USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short ETH on Lighter"
+     ],
+     "legs": [
+      "USD1>USDT",
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "USD1>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.685,
+       "funding": 6.316,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 3.381
+     },
+     "net": 3.381,
+     "delta1_net": 3.38,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       },
+       {
+        "name": "USD1 \u2192 USDT per day",
+        "usd": 210986,
+        "per": "debt",
+        "raw": 330239
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum",
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 5.38,
+      "longs_pay": 77.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 5.38,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-usdt-lighter-main",
+     "debt": "Venus USDT",
+     "hedge": "lighter-main",
+     "kind": "bridged",
+     "title": "Lighter via USDC",
+     "path": [
+      "Venus USDT",
+      "USDC",
+      "bridge \u2192 Ethereum",
+      "short ETH on Lighter"
+     ],
+     "legs": [
+      "USDT>USDC",
+      "bridge-eth"
+     ],
+     "loop": [
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -7.278,
+       "funding": 6.316,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.788
+     },
+     "net": 2.788,
+     "delta1_net": 2.78,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [
+      "bridge to Ethereum"
+     ],
+     "funding": {
+      "apr": 5.38,
+      "longs_pay": 77.7,
+      "n": 8683,
+      "days": 362,
+      "interval_h": 1.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 5.38,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-u-aster",
+     "debt": "Venus U",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus U",
+      "short ETH on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "U>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.198,
+       "funding": 5.2,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.753
+     },
+     "net": 2.753,
+     "delta1_net": 2.75,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 6766159,
+        "per": "debt",
+        "raw": 10590509
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus U rate kink at 80%",
+        "usd": 3238928,
+        "per": "debt",
+        "raw": 5069626
+       }
+      ]
+     },
+     "deps": [
+      "U \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 3.96,
+      "funding": 4.43,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-usd1-aster",
+     "debt": "Venus USD1",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus USD1",
+      "short ETH on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "USD1>USDT",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -6.685,
+       "funding": 5.2,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 2.266
+     },
+     "net": 2.266,
+     "delta1_net": 2.27,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 349130,
+        "per": "debt",
+        "raw": 546464
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USD1 rate kink at 80%",
+        "usd": 226541,
+        "per": "debt",
+        "raw": 354586
+       }
+      ]
+     },
+     "deps": [
+      "USD1 \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.271,
+      "funding": 4.43,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-usdt-aster",
+     "debt": "Venus USDT",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus USDT",
+      "short ETH on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -7.278,
+       "funding": 5.2,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 1.673
+     },
+     "net": 1.673,
+     "delta1_net": 1.67,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 37065493,
+        "per": "debt",
+        "raw": 58015555
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus USDT rate kink at 84%",
+        "usd": 21348730,
+        "per": "debt",
+        "raw": 33415403
+       }
+      ]
+     },
+     "deps": [],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured.",
+     "exit": [],
+     "inputs": {
+      "rate": 4.65,
+      "funding": 4.43,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "venus-lisusd-aster",
+     "debt": "Venus lisUSD",
+     "hedge": "aster",
+     "kind": "native",
+     "title": "Aster native",
+     "path": [
+      "Venus lisUSD",
+      "short ETH on Aster"
+     ],
+     "legs": [],
+     "loop": [
+      "lisUSD>USDT",
+      "lisUSD>USDT psm",
+      "USDT>ETH",
+      "ETH>wBETH"
+     ],
+     "pos": {
+      "collateral": 2.174,
+      "debt": 1.565,
+      "short": 1.174,
+      "margin": 0.391,
+      "recycled": 1.174,
+      "net_delta": 1.0,
+      "hedge_lev": 3.0
+     },
+     "carry": {
+      "legs": {
+       "yield": 4.807,
+       "debt": -8.458,
+       "funding": 5.2,
+       "margin": 0.0,
+       "costs": -1.056
+      },
+      "net": 0.493
+     },
+     "net": 0.493,
+     "delta1_net": 0.49,
+     "dial": {
+      "add": 42.21,
+      "worst": -7.9
+     },
+     "ceiling": {
+      "usd": 4094,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "borrow market",
+        "usd": 107554,
+        "per": "debt",
+        "raw": 168345
+       },
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 4094,
+        "per": "collateral",
+        "raw": 8900
+       },
+       {
+        "name": "Venus wBETH cap",
+        "usd": 4096556,
+        "per": "collateral",
+        "raw": 8905556
+       },
+       {
+        "name": "Venus lisUSD rate kink at 80%",
+        "usd": 62039,
+        "per": "debt",
+        "raw": 97104
+       }
+      ]
+     },
+     "deps": [
+      "lisUSD \u2192 USDT"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "Out of lisUSD is costly and slow: past the $451k pool, lisUSD \u2192 USDT goes through Lista's PSM at 2% and $500k a day. Into lisUSD is free: USDT \u2192 lisUSD 1:1.",
+     "exit": [
+      "USDT>lisUSD psm"
+     ],
+     "inputs": {
+      "rate": 5.404,
+      "funding": 4.43,
+      "margin_yield": 0.0,
+      "lt": 0.8,
+      "ltv": 0.72,
+      "yield": 2.211
+     }
+    },
+    {
+     "id": "wbeth-raw-aster",
+     "debt": "wBETH on Aster",
+     "hedge": "aster",
+     "kind": "raw",
+     "title": "Raw wBETH as margin",
+     "path": [
+      "wBETH",
+      "deposit on Aster as margin",
+      "short ETH on Aster"
+     ],
+     "legs": [],
+     "loop": [],
+     "exit": [],
+     "pos": {
+      "collateral": 1.0,
+      "debt": 0.0,
+      "short": 1.0,
+      "margin": 1.0,
+      "recycled": 0.0,
+      "hedge_lev": 1.0
+     },
+     "carry": {
+      "legs": {},
+      "net": 0.0
+     },
+     "net": 0.0,
+     "delta1_net": null,
+     "dial": {
+      "add": 35.95,
+      "worst": -6.73
+     },
+     "ceiling": {
+      "usd": 8900,
+      "binding": "wBETH exit on-chain, 5%",
+      "all": [
+       {
+        "name": "wBETH exit on-chain, 5%",
+        "usd": 8900,
+        "per": "collateral",
+        "raw": 8900
+       }
+      ]
+     },
+     "inputs": {
+      "rate": 0.0,
+      "funding": 4.43,
+      "margin_yield": 0.0,
+      "lt": null,
+      "ltv": 0.0,
+      "yield": 2.211,
+      "haircut": 0.9
+     },
+     "book": {
+      "0.5": 11694668,
+      "1": 33724078,
+      "2": 57726226
+     },
+     "deps": [
+      "wBETH margin counts at 90% on Aster"
+     ],
+     "funding": {
+      "apr": 4.43,
+      "longs_pay": 82.0,
+      "n": 1086,
+      "days": 362,
+      "interval_h": 8.0
+     },
+     "flag": "wBETH is minted and redeemed on Binance. On-chain it exits through pools that clear under $10k, so every ceiling here is the on-chain one; the Binance route is not measured."
+    }
+   ],
+   "dial_table": [
+    {
+     "hours": 1,
+     "trailing": 33.32,
+     "worst_window": 22.66,
+     "worst_trade": -4.11,
+     "trades": 69
+    },
+    {
+     "hours": 4,
+     "trailing": 42.21,
+     "worst_window": 14.62,
+     "worst_trade": -7.9,
+     "trades": 61
+    },
+    {
+     "hours": 12,
+     "trailing": 18.39,
+     "worst_window": 11.71,
+     "worst_trade": -9.76,
+     "trades": 54
+    },
+    {
+     "hours": 24,
+     "trailing": 3.55,
+     "worst_window": -1.37,
+     "worst_trade": -8.84,
+     "trades": 48
+    }
+   ],
+   "rejected": [
+    {
+     "what": "wBETH Venus USDT / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "wBETH Venus U / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "wBETH Venus USD1 / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "wBETH Venus lisUSD / hyperliquid",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    },
+    {
+     "what": "wBETH Venus lisUSD / lighter-rhc",
+     "why": "gate 4: needs USDG on Robinhood Chain; no USDG pool exists on BSC, so the margin has to be sourced on that chain, which is not priced here"
+    },
+    {
+     "what": "wBETH Venus lisUSD / lighter-main",
+     "why": "gate 4: best route LISUSD->USDT->USDC usable only $1,213/day"
+    }
+   ],
+   "sourced": {
+    "usdf_apy": {
+     "value": 9.6,
+     "source": "Aster Earn page, Trade APY, read by Root 2026-09-18"
+    },
+    "usdf_cap": {
+     "value": 100000,
+     "source": "docs.asterdex.com Trade & Earn: capped at 100,000 USDF per account"
+    },
+    "usdf_volume": {
+     "value": 50000,
+     "source": "Trade & Earn: 2+ days a week, 50,000 USDT weekly volume"
+    },
+    "aster_maker": {
+     "value": 0.0,
+     "source": "docs.asterdex.com fees: USDT perps 0% maker, 0.04% taker"
+    },
+    "aster_taker": {
+     "value": 0.04,
+     "source": "docs.asterdex.com fees"
+    },
+    "mint_rate": {
+     "value": 0.962954865386,
+     "source": "ListaStakeManager.convertBnbToSnBnb(1e18), 2026-09-18"
+    },
+    "venus_slis_cap": {
+     "value": 2000.0,
+     "source": "Comptroller.supplyCaps(vslisBNB), 2026-09-18"
+    },
+    "venus_slis_used": {
+     "value": 623.3,
+     "source": "vslisBNB totalSupply x exchangeRateStored, 2026-09-18"
+    },
+    "bnb_usd": {
+     "value": 731.1,
+     "source": "slisBNB/WBNB and WBNB/USDT pool spot, fetch_depth.py 2026-09-17"
+    },
+    "slis_per_bnb": {
+     "value": 1.038443,
+     "source": "ListaStakeManager.convertSnBnbToBnb(1e18)"
+    },
+    "dial_equity": {
+     "value": 42.21,
+     "source": "variable hedge, trailing 365 days (2025-09-16 to 2026-09-16), ETH, 12 h cuts, net of funding, taker fills, 1.174x short"
+    },
+    "dial_short": {
+     "value": 1.174,
+     "source": "short multiple the dial was measured at"
+    },
+    "dial_worst": {
+     "value": -7.9,
+     "source": "worst single trade in that window, % of equity"
+    },
+    "dial_trades": {
+     "value": 61,
+     "source": "trades in that window"
+    },
+    "dial_on": {
+     "value": 2.8,
+     "source": "% of hours the de-hedge is open"
+    },
+    "dial_edge": {
+     "value": 0.92,
+     "source": "median ETH move 4 h after a flush, %"
+    },
+    "dial_control": {
+     "value": 0.02,
+     "source": "median ETH move 4 h after a random minute, %"
+    },
+    "dial_decay": {
+     "value": "about three quarters in two years",
+     "source": "BNB window 64.3% (2024) to 13.5% (latest)"
+    },
+    "dial_windows": {
+     "value": "21 of 21",
+     "source": "rolling 12-month windows positive, full range +4.62% to +81.20%"
+    },
+    "dial_hours": {
+     "value": 4,
+     "source": "best trailing year among horizons whose worst rolling window is at least 12h's (+11.7%): 1h +33.3% (worst window +22.7%); 4h +42.2% (worst window +14.6%); 12h +18.4% (worst window +11.7%); 24h +3.5% (worst window -1.4%)"
+    }
+   }
+  }
+ }
+};
+let D,S,SRC,B,DEBTS,LEGN;
+function useAsset(a){
+  D=ALL.assets[a]; S=Object.fromEntries(Object.entries(D.sourced).map(([k,v])=>[k,v.value])); SRC=D.sourced; B=D.branches;
+  DEBTS=[...new Set(B.filter(b=>b.kind!=="raw").map(b=>b.debt))].sort((a,b)=>Math.max(...B.filter(x=>x.debt===b).map(x=>x.net))-Math.max(...B.filter(x=>x.debt===a).map(x=>x.net)));
+  LEGN={yield:`${D.collateral.name} yield`,margin:"USDF 9.6%",funding:`${D.hedge} funding`,debt:"debt",costs:"costs",dial:"variable hedge"};
+}
+const fmtDay=d=>new Date(d+"T00:00:00Z").toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"UTC"});
+const VN = {"aster":"Aster","hyperliquid":"Hyperliquid","lighter-main":"Lighter"};
+const LEGC = {yield:"var(--acc)",margin:"#6B8FD6",funding:"var(--pos)",debt:"var(--neg)",costs:"var(--mute)",dial:"#8C6BC8"};
+let st = {layout:1, dial:false, sel:null, asset:"slisBNB"};
+try{const s=JSON.parse(localStorage.getItem("cmap2")||"{}"); delete s.ltvBy; delete s.b; Object.assign(st,s);}catch(e){}
+// slider positions are never saved: every load opens at the top of green
+const save=()=>{try{const {ltvBy,b,...keep}=st;localStorage.setItem("cmap2",JSON.stringify(keep))}catch(e){}};
+
+const pct=(v,d=2)=>(v>0?"+":"")+v.toFixed(d)+"%";
+const cls=v=>v>=0?"pos":"neg";
+const usd=v=>v==null?"—":v>=1e6?"$"+(v/1e6).toFixed(v>=1e7?1:2)+"M":v>=1e3?"$"+Math.round(v/1e3)+"k":"$"+Math.round(v);
+st.ltvBy=st.ltvBy||{}; if(st.delta==null) st.delta=1; if(!ALL.assets[st.asset]) st.asset="slisBNB"; useAsset(st.asset);
+// carry_sim.solve at the LTV chosen for this debt: recycle x, delta one
+function curveAt(d,u){const pts=[[d.util,d.curve_now],...d.curve].sort((a,c)=>a[0]-c[0]);
+  if(u<=pts[0][0])return pts[0][1]; for(let i=1;i<pts.length;i++){if(u<=pts[i][0]){const [u0,a0]=pts[i-1],[u1,a1]=pts[i];return a0+(a1-a0)*(u-u0)/(u1-u0)}} return pts[pts.length-1][1];}
+function calc(b,size){
+  const I0=b.inputs,R=D.risk,F=R.falls_by[b.hedge], dl=+st.delta, Lv=D.model.hedge_lev;
+  if(b.kind==="raw"){  // slisBNB on Aster, no borrow: short 1 - delta per $1
+    const Sh=1-dl, lg={yield:I0.yield, funding:Sh*I0.funding, costs:0};  // mint slisBNB, deposit on Aster, 0% maker: no swap or bridge cost
+    const dialAdd=(S.dial_equity/S.dial_short)*Sh; if(dialOn(b)) lg.dial=dialAdd;
+    const caps=[{name:b.ceiling.binding,usd:b.ceiling.usd},...(Sh>0?[{name:`Aster ${D.hedge} book, 1%`,usd:b.book["1"]/Sh}]:[])];
+    return {V:0,C:1,Dt:0,Sh,M:Sh,lg,tot:Object.values(lg).reduce((a,c)=>a+c,0),dialAdd,bind:caps.reduce((a,c)=>c.usd<a.usd?c:a),buf:null,zone:"g",resp:R.response.aster,I:I0,raw:true};
+  }
+  const gMax=I0.lt*(1-F.worst24h.fall), yMax=I0.lt*(1-(R.alert+F.worst25_other.fall)), vMax=+(I0.lt*0.95).toFixed(3), lo=Math.max(0.30,+((1-dl)/Lv+0.01).toFixed(3));
+  const V=Math.max(lo,Math.min(vMax,+(st.ltvBy[st.asset+"|"+b.debt]??Math.floor(gMax/0.005)*0.005)));  // default: top of green
+  // resting delta d: short = collateral - d, margin = short / L, debt = V * collateral = recycled + margin
+  const x=(V-(1-dl)/Lv)/(1+1/Lv-V), C=1+x, Dt=V*C, Sh=C-dl, M=Sh/Lv;
+  // your own borrow moves the market: rate = realized base + the curve's rise to the new utilization
+  const d=debt(b.debt); let I=I0, u2=null;
+  if(size&&d&&d.curve){u2=(d.borrowed_usd+size*Dt)/d.supply_usd; I={...I0,rate:I0.rate+(curveAt(d,u2)-curveAt(d,d.util))};}
+  const lg={yield:C*(I.yield??D.collateral.yield), debt:-Dt*I.rate, ...(I.margin_yield?{margin:M*I.margin_yield}:{}), funding:Sh*I.funding, costs:-D.model.costs_pct};
+  const dialAdd=(S.dial_equity/S.dial_short)*Sh;
+  if(dialOn(b)) lg.dial=dialAdd;
+  const tot=Object.values(lg).reduce((a,c)=>a+c,0);
+  const mult={debt:Dt,collateral:C,margin:M};
+  const caps=b.ceiling.all.map(c=>({name:c.name,usd:c.raw/mult[c.per]}));
+  const bind=caps.reduce((a,c)=>c.usd<a.usd?c:a);
+  const buf=1-V/I.lt, zone=V<=gMax?"g":V<=yMax?"y":"r";
+  return {V,lo,vMax,gMax,yMax,C,Dt,Sh,M,lg,tot,dialAdd,bind,buf,zone,resp:R.response[b.hedge],I,u2};
+}
+const net=b=>calc(b).tot;
+const legs=b=>calc(b).lg;
+const pc1=v=>(v*100).toFixed(1)+"%";
+function noteHTML(b){const c=calc(b);return `<div class="note z-${c.zone}"><b>Getting margin back to BSC takes ${c.resp.seconds!=null?Math.round(c.resp.seconds/60)+" min":"an unmeasured time"}.</b> <span>${c.resp.parts}.</span></div>`}
+function ltvHTML(b){const c=calc(b),R=D.risk,F=R.falls_by[b.hedge],span=c.vMax-c.lo,at=v=>((v-c.lo)/span*100).toFixed(2);
+  const d24=fmtDay(F.worst24h.day), d1=fmtDay(R.fastest.m1.day);
+  const ZN={g:[`Survives ${d24}`,""],y:[`Survives every day but ${d24}`,`${d1}: -${pc1(R.fastest.m1.fall)} in 1 min`],r:["Liquidated before the margin gets back",""]};
+  return `<div><div class="lbl">LTV · ${b.debt} · LLTV ${(c.I.lt*100).toFixed(0)}%</div>
+    <div class="ltvrow"><input id="ltvg" data-debt="${esc(st.asset+"|"+b.debt)}" type="range" min="${c.lo}" max="${c.vMax}" step="0.005" value="${c.V}" aria-label="Loan to value"><b class="num z-t-${c.zone}">${pc1(c.V)}</b></div>
+    <div class="zbar"><i class="zg" style="width:${at(c.gMax)}%"></i><i class="zy" style="width:${(at(c.yMax)-at(c.gMax)).toFixed(2)}%"></i><i class="zr" style="width:${(100-at(c.yMax)).toFixed(2)}%"></i><span class="zmark" style="left:${at(c.V)}%"></span></div>
+    <div class="zlab num"><span>${pc1(c.lo)}</span><span style="left:${at(c.gMax)}%">${pc1(c.gMax)}</span><span style="left:${at(c.yMax)}%">${pc1(c.yMax)}</span><span style="left:100%">${pc1(c.vMax)}</span></div>
+    <div class="zone z-t-${c.zone}"><b>${ZN[c.zone][0]}</b>${ZN[c.zone][1]?` <span class="mute">· ${ZN[c.zone][1]}</span>`:""}</div></div>`}
+const s=(txt,key)=>`<span class="src" title="${SRC[key]?.source||key}">${txt}</span>`;
+const debt=name=>D.debts.find(d=>`${d.venue} ${d.asset}`===name);
+const pathHTML=b=>`<div class="path">${b.path.map((p,i)=>`${i?'<span class="arrow">→</span>':""}<span class="chip ${b.kind==='usdf'&&/USDF/.test(p)?'k-usdf':''}">${p}</span>`).join("")}</div>`;
+// USDF branches always run with the variable hedge on: the 9.6% needs the weekly volume it trades
+const VB=()=>B.filter(b=>!(b.kind==="raw"&&+st.delta===1));
+const dialOn=b=>st.dial||b.kind==="usdf"||b.kind==="raw";
+const by=id=>VB().find(b=>b.id===id)||VB()[0];
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function fundTip(b){const f=b.funding;return `${f.n.toLocaleString()} settlements over ${f.days} days, every ${f.interval_h}h, annualized on elapsed time`}
+function legBars(b,scale=16){
+  return Object.entries(legs(b)).map(([k,v])=>{const w=Math.min(Math.abs(v)/scale*50,50);
+    return `<div class="leg"><span>${LEGN[k]}</span><div class="bar"><i style="left:${v>=0?50:50-w}%;width:${w}%;background:${LEGC[k]}"></i><i style="left:50%;width:1px;background:var(--ink)"></i></div><span class="num r ${cls(v)}" style="text-align:right">${pct(v)}</span></div>`}).join("");
+}
+function kv(b){const d=debt(b.debt),c=calc(b);
+  if(c.raw) return `<div class="kv">
+  <div><span class="lbl">Borrow</span><b>none</b><span class="mute" style="font-size:12px">own ${D.collateral.name} as margin</span></div>
+  <div><span class="lbl">Funding</span><b title="${fundTip(b)}">${b.funding.apr.toFixed(2)}%</b><span class="mute" style="font-size:12px">longs paid ${b.funding.longs_pay}%</span></div>
+  <div><span class="lbl">Margin value</span><b>${Math.round((b.inputs.haircut??0.9)*100)}%</b><span class="mute" style="font-size:12px">Aster haircut on ${D.collateral.name}</span></div>
+  <div><span class="lbl">Ceiling</span><b>${usd(c.bind.usd)}</b><span class="mute" style="font-size:12px">${c.bind.name}</span></div>
+  <div><span class="lbl">Long / short</span><b>1.00× / ${c.Sh.toFixed(2)}×</b><span class="mute" style="font-size:12px">delta ${st.delta}</span></div>
+  </div>`;
+  return `<div class="kv">
+  <div><span class="lbl">Borrow</span><b>${d.rate.toFixed(2)}%</b><span class="mute" style="font-size:12px">${d.venue==='Lista'?`realized, ${d.days}d`:`Venus, today`}</span></div>
+  <div><span class="lbl">Funding</span><b title="${fundTip(b)}">${b.funding.apr.toFixed(2)}%</b><span class="mute" style="font-size:12px">longs paid ${b.funding.longs_pay}%</span></div>
+  <div><span class="lbl">Liquidates</span><b class="z-t-${c.zone}">-${pc1(c.buf)}</b><span class="mute" style="font-size:12px">at ${pc1(c.V)} LTV</span></div>
+  <div><span class="lbl">Ceiling</span><b>${usd(c.bind.usd)}</b><span class="mute" style="font-size:12px">${c.bind.name}</span></div>
+  <div><span class="lbl">Long / short</span><b>${c.C.toFixed(2)}× / ${c.Sh.toFixed(2)}×</b><span class="mute" style="font-size:12px">delta ${st.delta}, ${D.model.hedge_lev}× hedge</span></div>
+  </div>`}
+function legList(b){
+  const ids=[...b.legs,...b.loop,...(b.exit||[])];
+  const seen=new Set();
+  return `<table class="tbl"><thead><tr><th>Leg</th><th>Where</th><th class="r">Clears in 1%</th><th class="r">Per day</th></tr></thead><tbody>${ids.filter(i=>!seen.has(i)&&seen.add(i)).map(i=>{const l=ALL.legs[i];
+    const clears=l.depth1!=null?usd(l.depth1):l.seconds!=null?`${l.seconds}s · ${l.bps}bp`:"unlimited";
+    return `<tr><td>${l.label}${(b.exit||[]).includes(i)?' <span class="mute">exit</span>':b.loop.includes(i)&&!b.legs.includes(i)?' <span class="mute">loop</span>':''}</td><td class="mute">${l.pool||l.bridge}</td><td class="r num">${clears}</td><td class="r num">${l.per_day?usd(l.per_day):l.back?`back ${l.back.seconds}s`:"—"}</td></tr>`}).join("")}</tbody></table>`;
+}
+
+const LAYOUTS = {
+1:["Sidebar",()=>{const b=by(st.sel);
+  return `<div class="l1"><nav class="tree"><div class="assets" role="group" aria-label="Collateral">${Object.keys(ALL.assets).map(a=>`<button data-asset="${a}" aria-pressed="${a===st.asset}">${a}</button>`).join("")}</div><div class="root">${D.collateral.name} <span class="mute num" style="font-size:12px;font-weight:400">${D.collateral.yield_label}</span></div>
+  ${DEBTS.map(dn=>{const d=debt(dn);return `<div class="dbt"><span>${dn}</span><span class="mute num" style="font-weight:400">${d.rate.toFixed(2)}%</span></div>
+  ${VB().filter(x=>x.debt===dn&&x.kind!=="usdf").map(x=>`<button class="br" data-sel="${x.id}" aria-current="${x.id===b.id}"><span>${x.title}</span><span class="num ${cls(net(x))}">${pct(net(x),1)}</span></button>`).join("")}`}).join("")}${+st.delta===1?"":`<div class="dbt sub" style="margin-top:22px;flex-direction:column;align-items:flex-start;gap:2px"><span>${D.collateral.name} on Aster</span><span class="mute" style="font-weight:400;font-size:11px">no borrow | variable hedge on</span></div>`}
+  ${VB().filter(x=>x.kind==="raw").map(x=>`<button class="br" data-sel="${x.id}" aria-current="${x.id===b.id}"><span>${x.title}</span><span class="num ${cls(net(x))}">${pct(net(x),1)}</span></button>`).join("")}<div class="dbt sub" style="margin-top:22px"><span>USDF on Aster</span><span class="mute" style="font-weight:400;font-size:11px">variable hedge on</span></div>
+  ${VB().filter(x=>x.kind==="usdf").sort((a,c)=>net(c)-net(a)).map(x=>`<button class="br" data-sel="${x.id}" aria-current="${x.id===b.id}"><span>${x.debt}</span><span class="num ${cls(net(x))}">${pct(net(x),1)}</span></button>`).join("")}</nav>
+  <section class="detail">${dialOn(b)?`<div class="note z-y flag usdf"><p><b>Variable hedge.</b> After a sudden burst of forced selling, drop the short for ${S.dial_hours} hour${S.dial_hours>1?"s":""}, then put it back.</p><p>${D.hedge} usually bounces: a median +${S.dial_edge.toFixed(2)}% over that time, against +${S.dial_control.toFixed(2)}% after random minutes. Last year this added +${S.dial_equity}% over ${S.dial_trades} trades. The worst trade lost ${Math.abs(S.dial_worst)}%.</p><p class="neg">On ${fmtDay(D.risk.fastest.m1.day)} the selling didn't stop: ${D.hedge} fell ${pc1(D.risk.fastest.m1.fall)} in one minute. A dropped short would have been fully long into it.</p><p class="mute" style="font-size:12px">Why ${S.dial_hours}h: best trailing year among cut lengths whose worst rolling year is at least as good as 12h's. ${D.dial_table.map(r=>`${r.hours}h ${r.trailing>0?"+":""}${r.trailing.toFixed(1)}% (worst year ${r.worst_window>0?"+":""}${r.worst_window.toFixed(1)}%)`).join(" · ")}. Net of funding, 1.174× short; source: <code>bin/dial_backtest.py</code> on Binance 1m and Hyperliquid funding, ${S.dial_trades} trades in the last 365 days.</p></div>`:""}${b.kind==="usdf"?`<div class="note z-y flag usdf"><p>Aster's <a href="https://docs.asterdex.com/program-and-rewards/trade-and-earn" target="_blank" rel="noopener">Trade &amp; Earn</a> pays extra yield (9.6% at our read) on USDF held as margin. To qualify, trade on at least 2 days a week with $50k of volume, Thursday to Wednesday. It counts up to 100,000 USDF per account and pays weekly in USDF.</p><p>Earning it here means running the variable hedge with maker orders to reach $50k a week, on positions of up to 100,000 USDF margin each.</p><p class="neg">Aster's terms disqualify bulk account creation for bonus farming.</p></div>`:""}${b.kind==="raw"?"":noteHTML(b)}<div><div class="lbl">${b.debt} · ${b.title}</div><div class="big ${cls(net(b))}" style="margin-top:8px">${pct(net(b))}</div></div>
+  ${pathHTML(b)}${b.kind==="raw"?"":ltvHTML(b)}<div class="legs">${legBars(b)}</div>${kv(b)}${b.flag?`<div class="note z-y flag"><b>${b.flag}</b></div>`:""}<div class="scroll">${legList(b)}</div>
+  ${b.deps.length?`<div class="path"><span class="lbl">Depends on</span>${b.deps.map(x=>`<span class="chip">${x}</span>`).join("")}</div>`:""}</section></div>`}],
+
+};
+
+function render(){
+  if(!LAYOUTS[st.layout]) st.layout=1;
+  document.getElementById("dialbtn").setAttribute("aria-pressed",st.dial);
+  document.querySelectorAll("[data-delta]").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.delta===+st.delta));
+  document.getElementById("app").innerHTML=LAYOUTS[st.layout][1]();
+  save();
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-asset],[data-sel],[data-b],[data-dial],[data-slide],[data-delta],#dialbtn");
+  if(!t) return;
+  if(t.dataset.delta!=null){st.delta=+t.dataset.delta}
+  else if(t.id==="dialbtn"||t.dataset.dial){st.dial=!st.dial}
+  else if(t.dataset.asset){st.asset=t.dataset.asset;useAsset(st.asset);st.sel=null}
+  else if(t.dataset.sel){st.sel=t.dataset.sel}
+  else if(t.dataset.b){st.b[t.dataset.b]=t.dataset.v}
+  else if(t.dataset.slide){st.slide=(st.slide|0)+(+t.dataset.slide)}
+  render();
+});
+document.addEventListener("input",e=>{if(e.target.id==="ltvg"){st.ltvBy[e.target.dataset.debt]=+e.target.value;render();const i=document.getElementById("ltvg");i&&i.focus();return}if(e.target.id==="sl"){st.b.sleeves=+e.target.value;render();const i=document.getElementById("sl");i.focus();i.setSelectionRange?.(9,9)}});
+render();
+</script>
+
+</body>
+</html>
