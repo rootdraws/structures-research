@@ -267,11 +267,11 @@ const ALL = {
    "risk": {
     "alert": 0.05,
     "falls": {
-     "minutes": 21,
+     "minutes": 25,
      "window": "2025-09-20 to 2026-09-20",
      "worst25": {
       "day": "2025-10-10",
-      "fall": 0.2903
+      "fall": 0.2929
      },
      "worst25_other": {
       "day": "2026-02-06",
@@ -284,11 +284,11 @@ const ALL = {
     },
     "falls_by": {
      "lighter-main": {
-      "minutes": 21,
+      "minutes": 25,
       "window": "2025-09-20 to 2026-09-20",
       "worst25": {
        "day": "2025-10-10",
-       "fall": 0.2903
+       "fall": 0.2929
       },
       "worst25_other": {
        "day": "2026-02-06",
@@ -344,8 +344,8 @@ const ALL = {
     },
     "response": {
      "lighter-main": {
-      "seconds": 1236,
-      "parts": "Lighter withdrawal to Ethereum 20.2 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
+      "seconds": 1444,
+      "parts": "Lighter withdrawal to Ethereum 23.7 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
      },
      "hyperliquid": {
       "seconds": 395.1640000343323,
@@ -371,6 +371,7 @@ const ALL = {
     "equity": 1000.0,
     "hedge_lev": 3.0,
     "costs_pct": 1.056,
+    "min_ceiling": 100000,
     "ltv_rule": "target LTV survives the worst 24h fall of the last year (bin/ltv_rule.py)"
    },
    "funding": {
@@ -384,14 +385,14 @@ const ALL = {
     "Hyperliquid": {
      "apr": 5.42,
      "longs_pay": 77.2,
-     "n": 8544,
+     "n": 8543,
      "days": 356,
      "interval_h": 1.0
     },
     "Lighter": {
      "apr": 7.18,
      "longs_pay": 84.0,
-     "n": 8594,
+     "n": 8593,
      "days": 358,
      "interval_h": 1.0
     }
@@ -1803,7 +1804,7 @@ const ALL = {
      "funding": {
       "apr": 7.18,
       "longs_pay": 84.0,
-      "n": 8594,
+      "n": 8593,
       "days": 358,
       "interval_h": 1.0
      },
@@ -1892,7 +1893,7 @@ const ALL = {
      "funding": {
       "apr": 7.18,
       "longs_pay": 84.0,
-      "n": 8594,
+      "n": 8593,
       "days": 358,
       "interval_h": 1.0
      },
@@ -1991,7 +1992,7 @@ const ALL = {
      "funding": {
       "apr": 5.42,
       "longs_pay": 77.2,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -2080,7 +2081,7 @@ const ALL = {
      "funding": {
       "apr": 5.42,
       "longs_pay": 77.2,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -2358,7 +2359,7 @@ const ALL = {
      "funding": {
       "apr": 7.18,
       "longs_pay": 84.0,
-      "n": 8594,
+      "n": 8593,
       "days": 358,
       "interval_h": 1.0
      },
@@ -2453,7 +2454,7 @@ const ALL = {
      "funding": {
       "apr": 7.18,
       "longs_pay": 84.0,
-      "n": 8594,
+      "n": 8593,
       "days": 358,
       "interval_h": 1.0
      },
@@ -2647,7 +2648,7 @@ const ALL = {
      "funding": {
       "apr": 5.42,
       "longs_pay": 77.2,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -2752,7 +2753,7 @@ const ALL = {
      "funding": {
       "apr": 7.18,
       "longs_pay": 84.0,
-      "n": 8594,
+      "n": 8593,
       "days": 358,
       "interval_h": 1.0
      },
@@ -2820,9 +2821,9 @@ const ALL = {
       "haircut": 0.9
      },
      "book": {
-      "0.5": 1302778,
-      "1": 1523391,
-      "2": 1771088
+      "0.5": 1256230,
+      "1": 1470363,
+      "2": 1647384
      },
      "deps": [
       "slisBNB margin counts at 90% on Aster",
@@ -2917,7 +2918,7 @@ const ALL = {
      "funding": {
       "apr": 5.42,
       "longs_pay": 77.2,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -3022,7 +3023,7 @@ const ALL = {
      "funding": {
       "apr": 5.42,
       "longs_pay": 77.2,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -3460,15 +3461,15 @@ const ALL = {
    "risk": {
     "alert": 0.05,
     "falls": {
-     "minutes": 21,
+     "minutes": 25,
      "window": "2025-09-20 to 2026-09-20",
      "worst25": {
       "day": "2025-10-10",
-      "fall": 0.1139
+      "fall": 0.117
      },
      "worst25_other": {
       "day": "2026-02-06",
-      "fall": 0.0489
+      "fall": 0.0552
      },
      "worst24h": {
       "day": "2026-02-06",
@@ -3477,15 +3478,15 @@ const ALL = {
     },
     "falls_by": {
      "lighter-main": {
-      "minutes": 21,
+      "minutes": 25,
       "window": "2025-09-20 to 2026-09-20",
       "worst25": {
        "day": "2025-10-10",
-       "fall": 0.1139
+       "fall": 0.117
       },
       "worst25_other": {
        "day": "2026-02-06",
-       "fall": 0.0489
+       "fall": 0.0552
       },
       "worst24h": {
        "day": "2026-02-06",
@@ -3537,8 +3538,8 @@ const ALL = {
     },
     "response": {
      "lighter-main": {
-      "seconds": 1236,
-      "parts": "Lighter withdrawal to Ethereum 20.2 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
+      "seconds": 1444,
+      "parts": "Lighter withdrawal to Ethereum 23.7 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
      },
      "hyperliquid": {
       "seconds": 395.1640000343323,
@@ -3564,6 +3565,7 @@ const ALL = {
     "equity": 1000.0,
     "hedge_lev": 3.0,
     "costs_pct": 1.056,
+    "min_ceiling": 100000,
     "ltv_rule": "target LTV survives the worst 24h fall of the last year (bin/ltv_rule.py)"
    },
    "funding": {
@@ -3577,14 +3579,14 @@ const ALL = {
     "Hyperliquid": {
      "apr": 5.82,
      "longs_pay": 80.5,
-     "n": 8544,
+     "n": 8543,
      "days": 356,
      "interval_h": 1.0
     },
     "Lighter": {
      "apr": 5.29,
      "longs_pay": 75.4,
-     "n": 8545,
+     "n": 8544,
      "days": 356,
      "interval_h": 1.0
     }
@@ -4775,7 +4777,7 @@ const ALL = {
      "funding": {
       "apr": 5.82,
       "longs_pay": 80.5,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -4873,7 +4875,7 @@ const ALL = {
      "funding": {
       "apr": 5.82,
       "longs_pay": 80.5,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -4971,7 +4973,7 @@ const ALL = {
      "funding": {
       "apr": 5.29,
       "longs_pay": 75.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -5069,7 +5071,7 @@ const ALL = {
      "funding": {
       "apr": 5.29,
       "longs_pay": 75.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -5317,9 +5319,9 @@ const ALL = {
       "haircut": 0.95
      },
      "book": {
-      "0.5": 23905549,
-      "1": 39418375,
-      "2": 89459289
+      "0.5": 24087411,
+      "1": 54506240,
+      "2": 86765193
      },
      "deps": [
       "BTCB margin counts at 95% on Aster"
@@ -5516,7 +5518,7 @@ const ALL = {
      "funding": {
       "apr": 5.82,
       "longs_pay": 80.5,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -5620,7 +5622,7 @@ const ALL = {
      "funding": {
       "apr": 5.29,
       "longs_pay": 75.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -5714,7 +5716,7 @@ const ALL = {
      "funding": {
       "apr": 5.82,
       "longs_pay": 80.5,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -5808,7 +5810,7 @@ const ALL = {
      "funding": {
       "apr": 5.29,
       "longs_pay": 75.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -6175,11 +6177,11 @@ const ALL = {
    "risk": {
     "alert": 0.05,
     "falls": {
-     "minutes": 21,
+     "minutes": 25,
      "window": "2025-09-20 to 2026-09-20",
      "worst25": {
       "day": "2025-10-10",
-      "fall": 0.1243
+      "fall": 0.1275
      },
      "worst25_other": {
       "day": "2026-01-31",
@@ -6192,11 +6194,11 @@ const ALL = {
     },
     "falls_by": {
      "lighter-main": {
-      "minutes": 21,
+      "minutes": 25,
       "window": "2025-09-20 to 2026-09-20",
       "worst25": {
        "day": "2025-10-10",
-       "fall": 0.1243
+       "fall": 0.1275
       },
       "worst25_other": {
        "day": "2026-01-31",
@@ -6252,8 +6254,8 @@ const ALL = {
     },
     "response": {
      "lighter-main": {
-      "seconds": 1236,
-      "parts": "Lighter withdrawal to Ethereum 20.2 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
+      "seconds": 1444,
+      "parts": "Lighter withdrawal to Ethereum 23.7 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
      },
      "hyperliquid": {
       "seconds": 395.1640000343323,
@@ -6279,6 +6281,7 @@ const ALL = {
     "equity": 1000.0,
     "hedge_lev": 3.0,
     "costs_pct": 1.056,
+    "min_ceiling": 100000,
     "ltv_rule": "target LTV survives the worst 24h fall of the last year (bin/ltv_rule.py)"
    },
    "funding": {
@@ -6292,14 +6295,14 @@ const ALL = {
     "Hyperliquid": {
      "apr": 6.14,
      "longs_pay": 83.1,
-     "n": 8544,
+     "n": 8543,
      "days": 356,
      "interval_h": 1.0
     },
     "Lighter": {
-     "apr": 5.3,
+     "apr": 5.31,
      "longs_pay": 77.4,
-     "n": 8545,
+     "n": 8544,
      "days": 356,
      "interval_h": 1.0
     }
@@ -7277,7 +7280,7 @@ const ALL = {
      "funding": {
       "apr": 6.14,
       "longs_pay": 83.1,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -7328,12 +7331,12 @@ const ALL = {
       "legs": {
        "yield": 4.162,
        "debt": -4.868,
-       "funding": 4.676,
+       "funding": 4.685,
        "costs": -1.056
       },
-      "net": 2.914
+      "net": 2.923
      },
-     "net": 2.914,
+     "net": 2.923,
      "delta1_net": 2.92,
      "dial": {
       "add": 31.72,
@@ -7380,9 +7383,9 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.3,
+      "apr": 5.31,
       "longs_pay": 77.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -7390,7 +7393,7 @@ const ALL = {
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 5.3,
+      "funding": 5.31,
       "lt": 0.8,
       "ltv": 0.625,
       "yield": 2.211,
@@ -7477,7 +7480,7 @@ const ALL = {
      "funding": {
       "apr": 6.14,
       "longs_pay": 83.1,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -7679,7 +7682,7 @@ const ALL = {
      "funding": {
       "apr": 6.14,
       "longs_pay": 83.1,
-      "n": 8544,
+      "n": 8543,
       "days": 356,
       "interval_h": 1.0
      },
@@ -7727,12 +7730,12 @@ const ALL = {
       "legs": {
        "yield": 4.162,
        "debt": -5.746,
-       "funding": 4.676,
+       "funding": 4.685,
        "costs": -1.056
       },
-      "net": 2.036
+      "net": 2.045
      },
-     "net": 2.036,
+     "net": 2.045,
      "delta1_net": 2.04,
      "dial": {
       "add": 31.72,
@@ -7772,9 +7775,9 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 5.3,
+      "apr": 5.31,
       "longs_pay": 77.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -7782,7 +7785,7 @@ const ALL = {
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 5.3,
+      "funding": 5.31,
       "lt": 0.8,
       "ltv": 0.625,
       "yield": 2.211,
@@ -7825,12 +7828,12 @@ const ALL = {
       "legs": {
        "yield": 4.162,
        "debt": -6.439,
-       "funding": 4.676,
+       "funding": 4.685,
        "costs": -1.056
       },
-      "net": 1.344
+      "net": 1.352
      },
-     "net": 1.344,
+     "net": 1.352,
      "delta1_net": 1.35,
      "dial": {
       "add": 31.72,
@@ -7877,9 +7880,9 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.3,
+      "apr": 5.31,
       "longs_pay": 77.4,
-      "n": 8545,
+      "n": 8544,
       "days": 356,
       "interval_h": 1.0
      },
@@ -7887,7 +7890,7 @@ const ALL = {
      "exit": [],
      "inputs": {
       "rate": 5.473,
-      "funding": 5.3,
+      "funding": 5.31,
       "lt": 0.8,
       "ltv": 0.625,
       "yield": 2.211,
@@ -8233,9 +8236,9 @@ const ALL = {
       "haircut": 0.9
      },
      "book": {
-      "0.5": 12488361,
-      "1": 40991871,
-      "2": 63738878
+      "0.5": 14657389,
+      "1": 40491040,
+      "2": 63445869
      },
      "deps": [
       "wBETH margin counts at 90% on Aster"
@@ -8441,9 +8444,10 @@ const s=(txt,key)=>`<span class="src" title="${SRC[key]?.source||key}">${txt}</s
 const debt=name=>D.debts.find(d=>`${d.venue} ${d.asset}`===name);
 const pathHTML=b=>`<div class="path">${b.path.map((p,i)=>`${i?'<span class="arrow">→</span>':""}<span class="chip">${p}</span>`).join("")}</div>`;
 // Root 2026-09-24: a route at or under the asset's floor stays in the data but is not shown.
-const VB=()=>B.filter(b=>!(b.kind==="raw"&&+st.delta===1)&&net(b)>D.collateral.floor);
+const shown=b=>net(b)>D.collateral.floor&&calc(b).bind.usd>=D.model.min_ceiling;
+const VB=()=>B.filter(b=>!(b.kind==="raw"&&+st.delta===1)&&shown(b));
 const dialOn=b=>st.dial||b.kind==="raw";
-const HB=()=>B.filter(b=>!(b.kind==="raw"&&+st.delta===1)&&!(net(b)>D.collateral.floor));
+const HB=()=>B.filter(b=>!(b.kind==="raw"&&+st.delta===1)&&!shown(b));
 const by=id=>VB().find(b=>b.id===id)||HB().find(b=>b.id===id)||VB()[0];
 const fl=()=>`${D.collateral.floor.toFixed(1)}%`;
 const brHTML=(x,b)=>`<button class="br" data-sel="${x.id}" aria-current="${!!b&&x.id===b.id}"><span>${x.title}</span><span class="num ${cls(net(x))}">${pct(net(x),1)}</span></button>`;
@@ -8482,12 +8486,12 @@ function legList(b){
 const LAYOUTS = {
 1:["Sidebar",()=>{const b=by(st.sel);
   const assets=`<div class="assets" role="group" aria-label="Collateral">${Object.keys(ALL.assets).map(a=>`<button data-asset="${a}" aria-pressed="${a===st.asset}">${a}</button>`).join("")}</div>`;
-  if(!b) return `<div class="l1"><nav class="tree">${assets}${ghostsHTML(b)}</nav><section class="detail"><div class="note z-y flag"><b>No ${D.collateral.name} route clears ${D.collateral.floor.toFixed(1)}% at this setting.</b></div></section></div>`;
+  if(!b) return `<div class="l1"><nav class="tree">${assets}${ghostsHTML(b)}</nav><section class="detail">${D.collateral.note?`<div class="note z-y flag"><b>${D.collateral.note}</b></div>`:""}<div class="note z-y flag"><b>No ${D.collateral.name} route clears ${fl()} with a $${D.model.min_ceiling/1000}k ceiling at this setting.</b></div></section></div>`;
   return `<div class="l1"><nav class="tree">${assets}<div class="root">${D.collateral.name} <span class="mute num" style="font-size:12px;font-weight:400">${D.collateral.yield_label}</span></div>
   ${DEBTS.filter(dn=>VB().some(x=>x.debt===dn)).map(dn=>{const d=debt(dn);return `<div class="dbt"><span>${dn}</span><span class="mute num" style="font-weight:400">${d.rate.toFixed(2)}%</span></div>
   ${VB().filter(x=>x.debt===dn).map(x=>`<button class="br" data-sel="${x.id}" aria-current="${x.id===b.id}"><span>${x.title}</span><span class="num ${cls(net(x))}">${pct(net(x),1)}</span></button>`).join("")}`}).join("")}${+st.delta===1||!VB().some(x=>x.kind==="raw")?"":`<div class="dbt sub" style="margin-top:22px;flex-direction:column;align-items:flex-start;gap:2px"><span>${D.collateral.name} on Aster</span><span class="mute" style="font-weight:400;font-size:11px">no borrow | variable hedge on</span></div>`}
   ${VB().filter(x=>x.kind==="raw").map(x=>`<button class="br" data-sel="${x.id}" aria-current="${x.id===b.id}"><span>${x.title}</span><span class="num ${cls(net(x))}">${pct(net(x),1)}</span></button>`).join("")}${ghostsHTML(b)}</nav>
-  <section class="detail">${D.collateral.note?`<div class="note z-y flag"><b>${D.collateral.note}</b></div>`:""}${net(b)>D.collateral.floor?"":`<div class="note z-y flag"><b>Beneath the ${fl()} floor.</b></div>`}${dialOn(b)?`<div class="note z-y flag dial"><p><b>Variable hedge.</b> After a sudden burst of forced selling, drop the short for ${S.dial_hours} hour${S.dial_hours>1?"s":""}, then put it back.</p><p>${D.hedge} usually bounces: a median +${S.dial_edge.toFixed(2)}% over that time, against +${S.dial_control.toFixed(2)}% after random minutes. Last year this added +${S.dial_equity}% over ${S.dial_trades} trades. The worst trade lost ${Math.abs(S.dial_worst)}%.</p><p class="neg">On ${fmtDay(D.risk.fastest.m1.day)} the selling didn't stop: ${D.hedge} fell ${pc1(D.risk.fastest.m1.fall)} in one minute. A dropped short would have been fully long into it.</p><p class="mute" style="font-size:12px">Why ${S.dial_hours}h: best trailing year among cut lengths whose worst rolling year is at least as good as 12h's. ${D.dial_table.map(r=>`${r.hours}h ${r.trailing>0?"+":""}${r.trailing.toFixed(1)}% (worst year ${r.worst_window>0?"+":""}${r.worst_window.toFixed(1)}%)`).join(" · ")}. Net of funding, 1.174× short; source: <code>bin/dial_backtest.py</code> on Binance 1m and Hyperliquid funding, ${S.dial_trades} trades in the last 365 days.</p></div>`:""}${b.kind==="raw"?"":noteHTML(b)}<div><div class="lbl">${b.debt} · ${b.title}</div><div class="big ${cls(net(b))}" style="margin-top:8px">${pct(net(b))}</div></div>
+  <section class="detail">${D.collateral.note?`<div class="note z-y flag"><b>${D.collateral.note}</b></div>`:""}${shown(b)?"":`<div class="note z-y flag"><b>Beneath the ${net(b)>D.collateral.floor?`$${D.model.min_ceiling/1000}k ceiling`:`${fl()}`} floor.</b></div>`}${dialOn(b)?`<div class="note z-y flag dial"><p><b>Variable hedge.</b> After a sudden burst of forced selling, drop the short for ${S.dial_hours} hour${S.dial_hours>1?"s":""}, then put it back.</p><p>${D.hedge} usually bounces: a median +${S.dial_edge.toFixed(2)}% over that time, against +${S.dial_control.toFixed(2)}% after random minutes. Last year this added +${S.dial_equity}% over ${S.dial_trades} trades. The worst trade lost ${Math.abs(S.dial_worst)}%.</p><p class="neg">On ${fmtDay(D.risk.fastest.m1.day)} the selling didn't stop: ${D.hedge} fell ${pc1(D.risk.fastest.m1.fall)} in one minute. A dropped short would have been fully long into it.</p><p class="mute" style="font-size:12px">Why ${S.dial_hours}h: best trailing year among cut lengths whose worst rolling year is at least as good as 12h's. ${D.dial_table.map(r=>`${r.hours}h ${r.trailing>0?"+":""}${r.trailing.toFixed(1)}% (worst year ${r.worst_window>0?"+":""}${r.worst_window.toFixed(1)}%)`).join(" · ")}. Net of funding, 1.174× short; source: <code>bin/dial_backtest.py</code> on Binance 1m and Hyperliquid funding, ${S.dial_trades} trades in the last 365 days.</p></div>`:""}${b.kind==="raw"?"":noteHTML(b)}<div><div class="lbl">${b.debt} · ${b.title}</div><div class="big ${cls(net(b))}" style="margin-top:8px">${pct(net(b))}</div></div>
   ${pathHTML(b)}${b.kind==="raw"?"":ltvHTML(b)}<div class="legs">${legBars(b)}</div>${kv(b)}${b.flag?`<div class="note z-y flag"><b>${b.flag}</b></div>`:""}<div class="scroll">${legList(b)}</div>
   ${b.deps.length?`<div class="path"><span class="lbl">Depends on</span>${b.deps.map(x=>`<span class="chip">${x}</span>`).join("")}</div>`:""}</section></div>`}],
 
