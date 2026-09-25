@@ -156,7 +156,7 @@ svg .m{fill:var(--mute)}
 
 <script>
 const ALL = {
- "asOf": "2026-09-24",
+ "asOf": "2026-09-25",
  "legs": {
   "U>USDT": {
    "label": "U \u2192 USDT",
@@ -187,13 +187,13 @@ const ALL = {
   "lisUSD>USDT psm": {
    "label": "lisUSD \u2192 USDT, Lista PSM",
    "pool": "2% fee, $500k/day",
-   "depth1": 564073,
+   "depth1": 579709,
    "per_day": 500000
   },
   "USDT>lisUSD psm": {
    "label": "USDT \u2192 lisUSD, Lista PSM",
    "pool": "1:1, 0% fee",
-   "depth1": 9561209
+   "depth1": 9545573
   },
   "USDT>WBNB": {
    "label": "USDT \u2192 WBNB",
@@ -213,7 +213,7 @@ const ALL = {
   "ETH>wBETH": {
    "label": "ETH \u2192 wBETH",
    "pool": "Pancake, on-chain",
-   "depth1": 39765,
+   "depth1": 20942,
    "note": "wBETH mints and redeems on Binance; on-chain depth is tiny"
   },
   "U>WBNB": {
@@ -267,11 +267,11 @@ const ALL = {
    "risk": {
     "alert": 0.05,
     "falls": {
-     "minutes": 25,
+     "minutes": 21,
      "window": "2025-09-20 to 2026-09-20",
      "worst25": {
       "day": "2025-10-10",
-      "fall": 0.2929
+      "fall": 0.2903
      },
      "worst25_other": {
       "day": "2026-02-06",
@@ -284,11 +284,11 @@ const ALL = {
     },
     "falls_by": {
      "lighter-main": {
-      "minutes": 25,
+      "minutes": 21,
       "window": "2025-09-20 to 2026-09-20",
       "worst25": {
        "day": "2025-10-10",
-       "fall": 0.2929
+       "fall": 0.2903
       },
       "worst25_other": {
        "day": "2026-02-06",
@@ -344,8 +344,8 @@ const ALL = {
     },
     "response": {
      "lighter-main": {
-      "seconds": 1444,
-      "parts": "Lighter withdrawal to Ethereum 23.7 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
+      "seconds": 1232,
+      "parts": "Lighter withdrawal to Ethereum 20.1 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
      },
      "hyperliquid": {
       "seconds": 395.1640000343323,
@@ -365,7 +365,7 @@ const ALL = {
     "floor": 1.0,
     "note": null,
     "exit5": 3570000,
-    "venus_room": 1044988
+    "venus_room": 1054216
    },
    "model": {
     "equity": 1000.0,
@@ -376,24 +376,24 @@ const ALL = {
    },
    "funding": {
     "Aster": {
-     "apr": 2.72,
+     "apr": 2.69,
      "longs_pay": 34.6,
-     "n": 1068,
-     "days": 356,
+     "n": 1065,
+     "days": 355,
      "interval_h": 8.0
     },
     "Hyperliquid": {
-     "apr": 5.42,
+     "apr": 5.41,
      "longs_pay": 77.2,
-     "n": 8543,
-     "days": 356,
+     "n": 8516,
+     "days": 355,
      "interval_h": 1.0
     },
     "Lighter": {
-     "apr": 7.18,
-     "longs_pay": 84.0,
-     "n": 8593,
-     "days": 358,
+     "apr": 7.17,
+     "longs_pay": 83.9,
+     "n": 8566,
+     "days": 357,
      "interval_h": 1.0
     }
    },
@@ -407,7 +407,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.535,
-     "free": 50292906,
+     "free": 48465141,
      "flat": false,
      "kink_room": 20670067,
      "kink_label": "rate kink at 84%",
@@ -627,7 +627,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.535,
-     "free": 10010555,
+     "free": 10002775,
      "flat": false,
      "kink_room": 4296734,
      "kink_label": "rate kink at 80%",
@@ -847,7 +847,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.535,
-     "free": 448237,
+     "free": 448409,
      "flat": false,
      "kink_room": 256263,
      "kink_label": "rate kink at 80%",
@@ -1063,11 +1063,11 @@ const ALL = {
      "venue": "Lista",
      "asset": "USDT",
      "rate": 2.263,
-     "quoted": 2.264,
+     "quoted": 2.061,
      "days": 371,
      "lt": 0.8,
      "ltv": 0.535,
-     "free": 204226,
+     "free": 209272,
      "flat": false,
      "kink_room": 154236,
      "kink_label": "rate kink at 90%",
@@ -1283,11 +1283,11 @@ const ALL = {
      "venue": "Lista",
      "asset": "lisUSD",
      "rate": 2.836,
-     "quoted": 2.836,
+     "quoted": 2.87,
      "days": 288,
      "lt": 0.85,
      "ltv": 0.57,
-     "free": 8016875,
+     "free": 8014430,
      "flat": true,
      "kink_room": null,
      "kink_label": "",
@@ -1503,11 +1503,11 @@ const ALL = {
      "venue": "Lista",
      "asset": "U",
      "rate": 2.265,
-     "quoted": 2.268,
+     "quoted": 2.274,
      "days": 256,
      "lt": 0.86,
      "ltv": 0.575,
-     "free": 1708492,
+     "free": 1656265,
      "flat": false,
      "kink_room": 261075,
      "kink_label": "rate kink at 90%",
@@ -1756,13 +1756,13 @@ const ALL = {
       "legs": {
        "yield": 3.385,
        "debt": -2.29,
-       "funding": 5.444,
+       "funding": 5.437,
        "costs": -1.056
       },
-      "net": 5.483
+      "net": 5.475
      },
-     "net": 5.483,
-     "delta1_net": 5.48,
+     "net": 5.475,
+     "delta1_net": 5.47,
      "dial": {
       "add": 10.2,
       "worst": -5.83
@@ -1773,9 +1773,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 1689921,
+        "usd": 1638262,
         "per": "debt",
-        "raw": 1708492
+        "raw": 1656265
        },
        {
         "name": "slisBNB exit, 5%",
@@ -1802,17 +1802,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 7.18,
-      "longs_pay": 84.0,
-      "n": 8593,
-      "days": 358,
+      "apr": 7.17,
+      "longs_pay": 83.9,
+      "n": 8566,
+      "days": 357,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.265,
-      "funding": 7.18,
+      "funding": 7.17,
       "lt": 0.86,
       "ltv": 0.575,
       "yield": 1.925,
@@ -1852,13 +1852,13 @@ const ALL = {
       "legs": {
        "yield": 3.215,
        "debt": -2.022,
-       "funding": 4.812,
+       "funding": 4.805,
        "costs": -1.056
       },
-      "net": 4.949
+      "net": 4.942
      },
-     "net": 4.949,
-     "delta1_net": 4.95,
+     "net": 4.942,
+     "delta1_net": 4.94,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -1869,9 +1869,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 228561,
+        "usd": 234209,
         "per": "debt",
-        "raw": 204226
+        "raw": 209272
        },
        {
         "name": "slisBNB exit, 5%",
@@ -1891,17 +1891,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 7.18,
-      "longs_pay": 84.0,
-      "n": 8593,
-      "days": 358,
+      "apr": 7.17,
+      "longs_pay": 83.9,
+      "n": 8566,
+      "days": 357,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.263,
-      "funding": 7.18,
+      "funding": 7.17,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 1.925,
@@ -1944,13 +1944,13 @@ const ALL = {
       "legs": {
        "yield": 3.385,
        "debt": -2.29,
-       "funding": 4.11,
+       "funding": 4.102,
        "costs": -1.056
       },
-      "net": 4.148
+      "net": 4.141
      },
-     "net": 4.148,
-     "delta1_net": 4.15,
+     "net": 4.141,
+     "delta1_net": 4.14,
      "dial": {
       "add": 10.2,
       "worst": -5.83
@@ -1961,9 +1961,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 1689921,
+        "usd": 1638262,
         "per": "debt",
-        "raw": 1708492
+        "raw": 1656265
        },
        {
         "name": "slisBNB exit, 5%",
@@ -1990,17 +1990,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.42,
+      "apr": 5.41,
       "longs_pay": 77.2,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.265,
-      "funding": 5.42,
+      "funding": 5.41,
       "lt": 0.86,
       "ltv": 0.575,
       "yield": 1.925,
@@ -2040,13 +2040,13 @@ const ALL = {
       "legs": {
        "yield": 3.215,
        "debt": -2.022,
-       "funding": 3.632,
+       "funding": 3.625,
        "costs": -1.056
       },
-      "net": 3.769
+      "net": 3.762
      },
-     "net": 3.769,
-     "delta1_net": 3.77,
+     "net": 3.762,
+     "delta1_net": 3.76,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -2057,9 +2057,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 228561,
+        "usd": 234209,
         "per": "debt",
-        "raw": 204226
+        "raw": 209272
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2079,17 +2079,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 5.42,
+      "apr": 5.41,
       "longs_pay": 77.2,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.263,
-      "funding": 5.42,
+      "funding": 5.41,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 1.925,
@@ -2125,13 +2125,13 @@ const ALL = {
       "legs": {
        "yield": 3.385,
        "debt": -2.29,
-       "funding": 2.062,
+       "funding": 2.04,
        "costs": -1.056
       },
-      "net": 2.101
+      "net": 2.078
      },
-     "net": 2.101,
-     "delta1_net": 2.1,
+     "net": 2.078,
+     "delta1_net": 2.08,
      "dial": {
       "add": 10.2,
       "worst": -5.83
@@ -2142,9 +2142,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 1689921,
+        "usd": 1638262,
         "per": "debt",
-        "raw": 1708492
+        "raw": 1656265
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2170,17 +2170,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.265,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": 0.86,
       "ltv": 0.575,
       "yield": 1.925,
@@ -2215,13 +2215,13 @@ const ALL = {
       "legs": {
        "yield": 3.215,
        "debt": -2.022,
-       "funding": 1.823,
+       "funding": 1.803,
        "costs": -1.056
       },
-      "net": 1.96
+      "net": 1.94
      },
-     "net": 1.96,
-     "delta1_net": 1.96,
+     "net": 1.94,
+     "delta1_net": 1.94,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -2232,9 +2232,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 228561,
+        "usd": 234209,
         "per": "debt",
-        "raw": 204226
+        "raw": 209272
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2252,17 +2252,17 @@ const ALL = {
      },
      "deps": [],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.263,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 1.925,
@@ -2305,13 +2305,13 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -3.697,
-       "funding": 4.812,
+       "funding": 4.805,
        "costs": -1.056
       },
-      "net": 1.616
+      "net": 1.609
      },
-     "net": 1.616,
-     "delta1_net": 1.62,
+     "net": 1.609,
+     "delta1_net": 1.61,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -2322,9 +2322,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 11203402,
+        "usd": 11194694,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2334,9 +2334,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -2357,17 +2357,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 7.18,
-      "longs_pay": 84.0,
-      "n": 8593,
-      "days": 358,
+      "apr": 7.17,
+      "longs_pay": 83.9,
+      "n": 8566,
+      "days": 357,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 7.18,
+      "funding": 7.17,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -2407,26 +2407,26 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -4.364,
-       "funding": 4.812,
+       "funding": 4.805,
        "costs": -1.056
       },
-      "net": 0.949
+      "net": 0.942
      },
-     "net": 0.949,
-     "delta1_net": 0.95,
+     "net": 0.942,
+     "delta1_net": 0.94,
      "dial": {
       "add": 9.02,
       "worst": -5.15
      },
      "ceiling": {
-      "usd": 625687,
+      "usd": 631212,
       "binding": "Venus slisBNB cap",
       "all": [
        {
         "name": "borrow market",
-        "usd": 56285752,
+        "usd": 54240193,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2436,9 +2436,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -2452,17 +2452,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 7.18,
-      "longs_pay": 84.0,
-      "n": 8593,
-      "days": 358,
+      "apr": 7.17,
+      "longs_pay": 83.9,
+      "n": 8566,
+      "days": 357,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 7.18,
+      "funding": 7.17,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -2499,14 +2499,14 @@ const ALL = {
       "legs": {
        "yield": 3.362,
        "debt": -2.824,
-       "funding": 2.031,
+       "funding": 2.009,
        "costs": -1.056,
        "entry": -0.96
       },
-      "net": 0.554
+      "net": 0.532
      },
-     "net": 0.554,
-     "delta1_net": 0.55,
+     "net": 0.532,
+     "delta1_net": 0.53,
      "dial": {
       "add": 10.05,
       "worst": -5.74
@@ -2517,9 +2517,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 8052037,
+        "usd": 8049581,
         "per": "debt",
-        "raw": 8016875
+        "raw": 8014430
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2539,19 +2539,19 @@ const ALL = {
       "lisUSD \u2192 USDT"
      ],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
-     "flag": "This is year one. Entry is all taker: the loop sells lisUSD into a pool that trades about $1.2k a day, losing 1.29% of what it sells at the $590k ceiling, 0.96% of equity. Year two onward earns +1.51%. Past the pool, lisUSD \u2192 USDT goes through Lista's PSM at 2%. Exit is free: USDT \u2192 lisUSD 1:1.",
+     "flag": "This is year one. Entry is all taker: the loop sells lisUSD into a pool that trades about $1.2k a day, losing 1.29% of what it sells at the $590k ceiling, 0.96% of equity. Year two onward earns +1.49%. Past the pool, lisUSD \u2192 USDT goes through Lista's PSM at 2%. Exit is free: USDT \u2192 lisUSD 1:1.",
      "exit": [
       "USDT>lisUSD psm"
      ],
      "inputs": {
       "rate": 2.836,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": 0.85,
       "ltv": 0.57,
       "yield": 1.925,
@@ -2594,13 +2594,13 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -3.697,
-       "funding": 3.632,
+       "funding": 3.625,
        "costs": -1.056
       },
-      "net": 0.436
+      "net": 0.429
      },
-     "net": 0.436,
-     "delta1_net": 0.44,
+     "net": 0.429,
+     "delta1_net": 0.43,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -2611,9 +2611,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 11203402,
+        "usd": 11194694,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2623,9 +2623,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -2646,17 +2646,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.42,
+      "apr": 5.41,
       "longs_pay": 77.2,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 5.42,
+      "funding": 5.41,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -2699,12 +2699,12 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -4.89,
-       "funding": 4.812,
+       "funding": 4.805,
        "costs": -1.056
       },
-      "net": 0.423
+      "net": 0.416
      },
-     "net": 0.423,
+     "net": 0.416,
      "delta1_net": 0.42,
      "dial": {
       "add": 9.02,
@@ -2716,9 +2716,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 501648,
+        "usd": 501841,
         "per": "debt",
-        "raw": 448237
+        "raw": 448409
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2728,9 +2728,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus USD1 rate kink at 80%",
@@ -2751,17 +2751,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 7.18,
-      "longs_pay": 84.0,
-      "n": 8593,
-      "days": 358,
+      "apr": 7.17,
+      "longs_pay": 83.9,
+      "n": 8566,
+      "days": 357,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 5.473,
-      "funding": 7.18,
+      "funding": 7.17,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -2814,26 +2814,26 @@ const ALL = {
      },
      "inputs": {
       "rate": 0.0,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": null,
       "ltv": 0.0,
       "yield": 0.9325,
       "haircut": 0.9
      },
      "book": {
-      "0.5": 1256230,
-      "1": 1470363,
-      "2": 1647384
+      "0.5": 1348580,
+      "1": 1510770,
+      "2": 1676910
      },
      "deps": [
       "slisBNB margin counts at 90% on Aster",
       "no launch pool outside Lista"
      ],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null
@@ -2871,26 +2871,26 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -4.364,
-       "funding": 3.632,
+       "funding": 3.625,
        "costs": -1.056
       },
-      "net": -0.23
+      "net": -0.237
      },
-     "net": -0.23,
-     "delta1_net": -0.23,
+     "net": -0.237,
+     "delta1_net": -0.24,
      "dial": {
       "add": 9.02,
       "worst": -5.15
      },
      "ceiling": {
-      "usd": 625687,
+      "usd": 631212,
       "binding": "Venus slisBNB cap",
       "all": [
        {
         "name": "borrow market",
-        "usd": 56285752,
+        "usd": 54240193,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2900,9 +2900,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -2916,17 +2916,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 5.42,
+      "apr": 5.41,
       "longs_pay": 77.2,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 5.42,
+      "funding": 5.41,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -2969,13 +2969,13 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -4.89,
-       "funding": 3.632,
+       "funding": 3.625,
        "costs": -1.056
       },
-      "net": -0.757
+      "net": -0.763
      },
-     "net": -0.757,
-     "delta1_net": -0.75,
+     "net": -0.763,
+     "delta1_net": -0.77,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -2986,9 +2986,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 501648,
+        "usd": 501841,
         "per": "debt",
-        "raw": 448237
+        "raw": 448409
        },
        {
         "name": "slisBNB exit, 5%",
@@ -2998,9 +2998,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus USD1 rate kink at 80%",
@@ -3021,17 +3021,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.42,
+      "apr": 5.41,
       "longs_pay": 77.2,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 5.473,
-      "funding": 5.42,
+      "funding": 5.41,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -3067,26 +3067,26 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -3.697,
-       "funding": 1.823,
+       "funding": 1.803,
        "costs": -1.056
       },
-      "net": -1.373
+      "net": -1.393
      },
-     "net": -1.373,
-     "delta1_net": -1.38,
+     "net": -1.393,
+     "delta1_net": -1.39,
      "dial": {
       "add": 9.02,
       "worst": -5.15
      },
      "ceiling": {
-      "usd": 625687,
+      "usd": 631212,
       "binding": "Venus slisBNB cap",
       "all": [
        {
         "name": "borrow market",
-        "usd": 11203402,
+        "usd": 11194694,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "slisBNB exit, 5%",
@@ -3096,9 +3096,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -3118,17 +3118,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -3163,26 +3163,26 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -4.364,
-       "funding": 1.823,
+       "funding": 1.803,
        "costs": -1.056
       },
-      "net": -2.04
+      "net": -2.06
      },
-     "net": -2.04,
-     "delta1_net": -2.04,
+     "net": -2.06,
+     "delta1_net": -2.06,
      "dial": {
       "add": 9.02,
       "worst": -5.15
      },
      "ceiling": {
-      "usd": 625687,
+      "usd": 631212,
       "binding": "Venus slisBNB cap",
       "all": [
        {
         "name": "borrow market",
-        "usd": 56285752,
+        "usd": 54240193,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "slisBNB exit, 5%",
@@ -3192,9 +3192,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -3206,17 +3206,17 @@ const ALL = {
      },
      "deps": [],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -3252,13 +3252,13 @@ const ALL = {
       "legs": {
        "yield": 1.557,
        "debt": -4.89,
-       "funding": 1.823,
+       "funding": 1.803,
        "costs": -1.056
       },
-      "net": -2.566
+      "net": -2.586
      },
-     "net": -2.566,
-     "delta1_net": -2.57,
+     "net": -2.586,
+     "delta1_net": -2.58,
      "dial": {
       "add": 9.02,
       "worst": -5.15
@@ -3269,9 +3269,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 501648,
+        "usd": 501841,
         "per": "debt",
-        "raw": 448237
+        "raw": 448409
        },
        {
         "name": "slisBNB exit, 5%",
@@ -3281,9 +3281,9 @@ const ALL = {
        },
        {
         "name": "Venus slisBNB cap",
-        "usd": 625687,
+        "usd": 631212,
         "per": "collateral",
-        "raw": 1044988
+        "raw": 1054216
        },
        {
         "name": "Venus USD1 rate kink at 80%",
@@ -3303,17 +3303,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 2.72,
+      "apr": 2.69,
       "longs_pay": 34.6,
-      "n": 1068,
-      "days": 356,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 5.473,
-      "funding": 2.72,
+      "funding": 2.69,
       "lt": 0.8,
       "ltv": 0.535,
       "yield": 0.9325,
@@ -3461,15 +3461,15 @@ const ALL = {
    "risk": {
     "alert": 0.05,
     "falls": {
-     "minutes": 25,
+     "minutes": 21,
      "window": "2025-09-20 to 2026-09-20",
      "worst25": {
       "day": "2025-10-10",
-      "fall": 0.117
+      "fall": 0.1139
      },
      "worst25_other": {
       "day": "2026-02-06",
-      "fall": 0.0552
+      "fall": 0.0489
      },
      "worst24h": {
       "day": "2026-02-06",
@@ -3478,15 +3478,15 @@ const ALL = {
     },
     "falls_by": {
      "lighter-main": {
-      "minutes": 25,
+      "minutes": 21,
       "window": "2025-09-20 to 2026-09-20",
       "worst25": {
        "day": "2025-10-10",
-       "fall": 0.117
+       "fall": 0.1139
       },
       "worst25_other": {
        "day": "2026-02-06",
-       "fall": 0.0552
+       "fall": 0.0489
       },
       "worst24h": {
        "day": "2026-02-06",
@@ -3538,8 +3538,8 @@ const ALL = {
     },
     "response": {
      "lighter-main": {
-      "seconds": 1444,
-      "parts": "Lighter withdrawal to Ethereum 23.7 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
+      "seconds": 1232,
+      "parts": "Lighter withdrawal to Ethereum 20.1 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
      },
      "hyperliquid": {
       "seconds": 395.1640000343323,
@@ -3559,7 +3559,7 @@ const ALL = {
     "floor": 1.0,
     "note": null,
     "exit5": 10270000,
-    "venus_room": 516936728
+    "venus_room": 520322842
    },
    "model": {
     "equity": 1000.0,
@@ -3570,24 +3570,24 @@ const ALL = {
    },
    "funding": {
     "Aster": {
-     "apr": 4.15,
-     "longs_pay": 79.3,
-     "n": 1068,
-     "days": 356,
+     "apr": 4.14,
+     "longs_pay": 79.2,
+     "n": 1065,
+     "days": 355,
      "interval_h": 8.0
     },
     "Hyperliquid": {
-     "apr": 5.82,
+     "apr": 5.81,
      "longs_pay": 80.5,
-     "n": 8543,
-     "days": 356,
+     "n": 8516,
+     "days": 355,
      "interval_h": 1.0
     },
     "Lighter": {
-     "apr": 5.29,
-     "longs_pay": 75.4,
-     "n": 8544,
-     "days": 356,
+     "apr": 5.27,
+     "longs_pay": 75.3,
+     "n": 8517,
+     "days": 355,
      "interval_h": 1.0
     }
    },
@@ -3601,7 +3601,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.65,
-     "free": 50292906,
+     "free": 48465141,
      "flat": false,
      "kink_room": 20670067,
      "kink_label": "rate kink at 84%",
@@ -3821,7 +3821,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.65,
-     "free": 10010555,
+     "free": 10002775,
      "flat": false,
      "kink_room": 4296734,
      "kink_label": "rate kink at 80%",
@@ -4037,11 +4037,11 @@ const ALL = {
      "venue": "Lista",
      "asset": "U",
      "rate": 2.281,
-     "quoted": 2.281,
+     "quoted": 2.285,
      "days": 279,
      "lt": 0.86,
      "ltv": 0.7,
-     "free": 1742644,
+     "free": 1748666,
      "flat": false,
      "kink_room": 290441,
      "kink_label": "rate kink at 90%",
@@ -4257,11 +4257,11 @@ const ALL = {
      "venue": "Lista",
      "asset": "lisUSD",
      "rate": 1.878,
-     "quoted": 1.88,
+     "quoted": 1.855,
      "days": 129,
      "lt": 0.86,
      "ltv": 0.7,
-     "free": 563101,
+     "free": 563627,
      "flat": false,
      "kink_room": 486055,
      "kink_label": "rate kink at 90%",
@@ -4477,11 +4477,11 @@ const ALL = {
      "venue": "Lista",
      "asset": "USD1",
      "rate": 1.861,
-     "quoted": 1.862,
+     "quoted": 1.801,
      "days": 371,
      "lt": 0.7,
      "ltv": 0.57,
-     "free": 14149293,
+     "free": 16143935,
      "flat": false,
      "kink_room": 4958692,
      "kink_label": "rate kink at 90%",
@@ -4729,13 +4729,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -3.361,
-       "funding": 6.433,
+       "funding": 6.422,
        "costs": -1.056
       },
-      "net": 2.015
+      "net": 2.004
      },
-     "net": 2.015,
-     "delta1_net": 2.02,
+     "net": 2.004,
+     "delta1_net": 2.01,
      "dial": {
       "add": 15.85,
       "worst": -1.25
@@ -4746,9 +4746,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 1182508,
+        "usd": 1186595,
         "per": "debt",
-        "raw": 1742644
+        "raw": 1748666
        },
        {
         "name": "BTCB exit, 5%",
@@ -4775,17 +4775,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.82,
+      "apr": 5.81,
       "longs_pay": 80.5,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.281,
-      "funding": 5.82,
+      "funding": 5.81,
       "lt": 0.86,
       "ltv": 0.7,
       "yield": 0.0,
@@ -4827,13 +4827,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -1.853,
-       "funding": 4.346,
+       "funding": 4.338,
        "costs": -1.056
       },
-      "net": 1.437
+      "net": 1.43
      },
-     "net": 1.437,
-     "delta1_net": 1.44,
+     "net": 1.43,
+     "delta1_net": 1.43,
      "dial": {
       "add": 10.71,
       "worst": -0.85
@@ -4844,9 +4844,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 14211351,
+        "usd": 16214742,
         "per": "debt",
-        "raw": 14149293
+        "raw": 16143935
        },
        {
         "name": "BTCB exit, 5%",
@@ -4873,17 +4873,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.82,
+      "apr": 5.81,
       "longs_pay": 80.5,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 1.861,
-      "funding": 5.82,
+      "funding": 5.81,
       "lt": 0.7,
       "ltv": 0.57,
       "yield": 0.0,
@@ -4925,13 +4925,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -3.361,
-       "funding": 5.847,
+       "funding": 5.825,
        "costs": -1.056
       },
-      "net": 1.429
+      "net": 1.407
      },
-     "net": 1.429,
-     "delta1_net": 1.43,
+     "net": 1.407,
+     "delta1_net": 1.41,
      "dial": {
       "add": 15.85,
       "worst": -1.25
@@ -4942,9 +4942,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 1182508,
+        "usd": 1186595,
         "per": "debt",
-        "raw": 1742644
+        "raw": 1748666
        },
        {
         "name": "BTCB exit, 5%",
@@ -4971,17 +4971,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.29,
-      "longs_pay": 75.4,
-      "n": 8544,
-      "days": 356,
+      "apr": 5.27,
+      "longs_pay": 75.3,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.281,
-      "funding": 5.29,
+      "funding": 5.27,
       "lt": 0.86,
       "ltv": 0.7,
       "yield": 0.0,
@@ -5023,13 +5023,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -1.853,
-       "funding": 3.95,
+       "funding": 3.935,
        "costs": -1.056
       },
-      "net": 1.041
+      "net": 1.026
      },
-     "net": 1.041,
-     "delta1_net": 1.04,
+     "net": 1.026,
+     "delta1_net": 1.03,
      "dial": {
       "add": 10.71,
       "worst": -0.85
@@ -5040,9 +5040,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 14211351,
+        "usd": 16214742,
         "per": "debt",
-        "raw": 14149293
+        "raw": 16143935
        },
        {
         "name": "BTCB exit, 5%",
@@ -5069,17 +5069,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.29,
-      "longs_pay": 75.4,
-      "n": 8544,
-      "days": 356,
+      "apr": 5.27,
+      "longs_pay": 75.3,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 1.861,
-      "funding": 5.29,
+      "funding": 5.27,
       "lt": 0.7,
       "ltv": 0.57,
       "yield": 0.0,
@@ -5114,13 +5114,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -1.853,
-       "funding": 3.099,
+       "funding": 3.091,
        "costs": -1.056
       },
-      "net": 0.19
+      "net": 0.183
      },
-     "net": 0.19,
-     "delta1_net": 0.19,
+     "net": 0.183,
+     "delta1_net": 0.18,
      "dial": {
       "add": 10.71,
       "worst": -0.85
@@ -5131,9 +5131,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 14211351,
+        "usd": 16214742,
         "per": "debt",
-        "raw": 14149293
+        "raw": 16143935
        },
        {
         "name": "BTCB exit, 5%",
@@ -5159,17 +5159,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 4.15,
-      "longs_pay": 79.3,
-      "n": 1068,
-      "days": 356,
+      "apr": 4.14,
+      "longs_pay": 79.2,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 1.861,
-      "funding": 4.15,
+      "funding": 4.14,
       "lt": 0.7,
       "ltv": 0.57,
       "yield": 0.0,
@@ -5204,13 +5204,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -3.361,
-       "funding": 4.587,
+       "funding": 4.576,
        "costs": -1.056
       },
-      "net": 0.169
+      "net": 0.158
      },
-     "net": 0.169,
-     "delta1_net": 0.17,
+     "net": 0.158,
+     "delta1_net": 0.15,
      "dial": {
       "add": 15.85,
       "worst": -1.25
@@ -5221,9 +5221,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 1182508,
+        "usd": 1186595,
         "per": "debt",
-        "raw": 1742644
+        "raw": 1748666
        },
        {
         "name": "BTCB exit, 5%",
@@ -5249,17 +5249,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 4.15,
-      "longs_pay": 79.3,
-      "n": 1068,
-      "days": 356,
+      "apr": 4.14,
+      "longs_pay": 79.2,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 2.281,
-      "funding": 4.15,
+      "funding": 4.14,
       "lt": 0.86,
       "ltv": 0.7,
       "yield": 0.0,
@@ -5312,25 +5312,25 @@ const ALL = {
      },
      "inputs": {
       "rate": 0.0,
-      "funding": 4.15,
+      "funding": 4.14,
       "lt": null,
       "ltv": 0.0,
       "yield": 0.0,
       "haircut": 0.95
      },
      "book": {
-      "0.5": 24087411,
-      "1": 54506240,
-      "2": 86765193
+      "0.5": 21458920,
+      "1": 42841311,
+      "2": 84039060
      },
      "deps": [
       "BTCB margin counts at 95% on Aster"
      ],
      "funding": {
-      "apr": 4.15,
-      "longs_pay": 79.3,
-      "n": 1068,
-      "days": 356,
+      "apr": 4.14,
+      "longs_pay": 79.2,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null
@@ -5364,14 +5364,14 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -2.768,
-       "funding": 4.587,
+       "funding": 4.576,
        "costs": -1.056,
        "entry": -1.421
       },
-      "net": -0.658
+      "net": -0.669
      },
-     "net": -0.658,
-     "delta1_net": -0.66,
+     "net": -0.669,
+     "delta1_net": -0.67,
      "dial": {
       "add": 15.85,
       "worst": -1.25
@@ -5382,9 +5382,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 382104,
+        "usd": 382461,
         "per": "debt",
-        "raw": 563101
+        "raw": 563627
        },
        {
         "name": "BTCB exit, 5%",
@@ -5410,19 +5410,19 @@ const ALL = {
       "lisUSD \u2192 USDT"
      ],
      "funding": {
-      "apr": 4.15,
-      "longs_pay": 79.3,
-      "n": 1068,
-      "days": 356,
+      "apr": 4.14,
+      "longs_pay": 79.2,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
-     "flag": "This is year one. Entry is all taker: the loop sells lisUSD into a pool that trades about $1.2k a day, losing 1.29% of what it sells at the $399k ceiling, 1.42% of equity. Year two onward earns +0.76%. Past the pool, lisUSD \u2192 USDT goes through Lista's PSM at 2%. Exit is free: USDT \u2192 lisUSD 1:1.",
+     "flag": "This is year one. Entry is all taker: the loop sells lisUSD into a pool that trades about $1.2k a day, losing 1.29% of what it sells at the $399k ceiling, 1.42% of equity. Year two onward earns +0.75%. Past the pool, lisUSD \u2192 USDT goes through Lista's PSM at 2%. Exit is free: USDT \u2192 lisUSD 1:1.",
      "exit": [
       "USDT>lisUSD psm"
      ],
      "inputs": {
       "rate": 1.878,
-      "funding": 4.15,
+      "funding": 4.14,
       "lt": 0.86,
       "ltv": 0.7,
       "yield": 0.0,
@@ -5464,13 +5464,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -5.248,
-       "funding": 5.536,
+       "funding": 5.527,
        "costs": -1.056
       },
-      "net": -0.768
+      "net": -0.778
      },
-     "net": -0.768,
-     "delta1_net": -0.77,
+     "net": -0.778,
+     "delta1_net": -0.78,
      "dial": {
       "add": 13.64,
       "worst": -1.08
@@ -5481,9 +5481,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 7892938,
+        "usd": 7886803,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "BTCB exit, 5%",
@@ -5493,9 +5493,9 @@ const ALL = {
        },
        {
         "name": "Venus BTCB cap",
-        "usd": 264930073,
+        "usd": 266665456,
         "per": "collateral",
-        "raw": 516936728
+        "raw": 520322842
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -5516,17 +5516,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.82,
+      "apr": 5.81,
       "longs_pay": 80.5,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 5.82,
+      "funding": 5.81,
       "lt": 0.8,
       "ltv": 0.65,
       "yield": 0.0,
@@ -5568,13 +5568,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -5.248,
-       "funding": 5.032,
+       "funding": 5.013,
        "costs": -1.056
       },
-      "net": -1.272
+      "net": -1.291
      },
-     "net": -1.272,
-     "delta1_net": -1.27,
+     "net": -1.291,
+     "delta1_net": -1.29,
      "dial": {
       "add": 13.64,
       "worst": -1.08
@@ -5585,9 +5585,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 7892938,
+        "usd": 7886803,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "BTCB exit, 5%",
@@ -5597,9 +5597,9 @@ const ALL = {
        },
        {
         "name": "Venus BTCB cap",
-        "usd": 264930073,
+        "usd": 266665456,
         "per": "collateral",
-        "raw": 516936728
+        "raw": 520322842
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -5620,17 +5620,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.29,
-      "longs_pay": 75.4,
-      "n": 8544,
-      "days": 356,
+      "apr": 5.27,
+      "longs_pay": 75.3,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 5.29,
+      "funding": 5.27,
       "lt": 0.8,
       "ltv": 0.65,
       "yield": 0.0,
@@ -5669,13 +5669,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -6.194,
-       "funding": 5.536,
+       "funding": 5.527,
        "costs": -1.056
       },
-      "net": -1.714
+      "net": -1.724
      },
-     "net": -1.714,
-     "delta1_net": -1.71,
+     "net": -1.724,
+     "delta1_net": -1.72,
      "dial": {
       "add": 13.64,
       "worst": -1.08
@@ -5686,9 +5686,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 39654022,
+        "usd": 38212900,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "BTCB exit, 5%",
@@ -5698,9 +5698,9 @@ const ALL = {
        },
        {
         "name": "Venus BTCB cap",
-        "usd": 264930073,
+        "usd": 266665456,
         "per": "collateral",
-        "raw": 516936728
+        "raw": 520322842
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -5714,17 +5714,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 5.82,
+      "apr": 5.81,
       "longs_pay": 80.5,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 5.82,
+      "funding": 5.81,
       "lt": 0.8,
       "ltv": 0.65,
       "yield": 0.0,
@@ -5763,13 +5763,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -6.194,
-       "funding": 5.032,
+       "funding": 5.013,
        "costs": -1.056
       },
-      "net": -2.218
+      "net": -2.237
      },
-     "net": -2.218,
-     "delta1_net": -2.22,
+     "net": -2.237,
+     "delta1_net": -2.24,
      "dial": {
       "add": 13.64,
       "worst": -1.08
@@ -5780,9 +5780,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 39654022,
+        "usd": 38212900,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "BTCB exit, 5%",
@@ -5792,9 +5792,9 @@ const ALL = {
        },
        {
         "name": "Venus BTCB cap",
-        "usd": 264930073,
+        "usd": 266665456,
         "per": "collateral",
-        "raw": 516936728
+        "raw": 520322842
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -5808,17 +5808,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 5.29,
-      "longs_pay": 75.4,
-      "n": 8544,
-      "days": 356,
+      "apr": 5.27,
+      "longs_pay": 75.3,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 5.29,
+      "funding": 5.27,
       "lt": 0.8,
       "ltv": 0.65,
       "yield": 0.0,
@@ -5853,13 +5853,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -5.248,
-       "funding": 3.948,
+       "funding": 3.938,
        "costs": -1.056
       },
-      "net": -2.357
+      "net": -2.366
      },
-     "net": -2.357,
-     "delta1_net": -2.36,
+     "net": -2.366,
+     "delta1_net": -2.37,
      "dial": {
       "add": 13.64,
       "worst": -1.08
@@ -5870,9 +5870,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 7892938,
+        "usd": 7886803,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "BTCB exit, 5%",
@@ -5882,9 +5882,9 @@ const ALL = {
        },
        {
         "name": "Venus BTCB cap",
-        "usd": 264930073,
+        "usd": 266665456,
         "per": "collateral",
-        "raw": 516936728
+        "raw": 520322842
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -5904,17 +5904,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 4.15,
-      "longs_pay": 79.3,
-      "n": 1068,
-      "days": 356,
+      "apr": 4.14,
+      "longs_pay": 79.2,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 4.15,
+      "funding": 4.14,
       "lt": 0.8,
       "ltv": 0.65,
       "yield": 0.0,
@@ -5948,13 +5948,13 @@ const ALL = {
       "legs": {
        "yield": 0.0,
        "debt": -6.194,
-       "funding": 3.948,
+       "funding": 3.938,
        "costs": -1.056
       },
-      "net": -3.303
+      "net": -3.312
      },
-     "net": -3.303,
-     "delta1_net": -3.3,
+     "net": -3.312,
+     "delta1_net": -3.32,
      "dial": {
       "add": 13.64,
       "worst": -1.08
@@ -5965,9 +5965,9 @@ const ALL = {
       "all": [
        {
         "name": "borrow market",
-        "usd": 39654022,
+        "usd": 38212900,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "BTCB exit, 5%",
@@ -5977,9 +5977,9 @@ const ALL = {
        },
        {
         "name": "Venus BTCB cap",
-        "usd": 264930073,
+        "usd": 266665456,
         "per": "collateral",
-        "raw": 516936728
+        "raw": 520322842
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -5991,17 +5991,17 @@ const ALL = {
      },
      "deps": [],
      "funding": {
-      "apr": 4.15,
-      "longs_pay": 79.3,
-      "n": 1068,
-      "days": 356,
+      "apr": 4.14,
+      "longs_pay": 79.2,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 4.15,
+      "funding": 4.14,
       "lt": 0.8,
       "ltv": 0.65,
       "yield": 0.0,
@@ -6177,11 +6177,11 @@ const ALL = {
    "risk": {
     "alert": 0.05,
     "falls": {
-     "minutes": 25,
+     "minutes": 21,
      "window": "2025-09-20 to 2026-09-20",
      "worst25": {
       "day": "2025-10-10",
-      "fall": 0.1275
+      "fall": 0.1243
      },
      "worst25_other": {
       "day": "2026-01-31",
@@ -6194,11 +6194,11 @@ const ALL = {
     },
     "falls_by": {
      "lighter-main": {
-      "minutes": 25,
+      "minutes": 21,
       "window": "2025-09-20 to 2026-09-20",
       "worst25": {
        "day": "2025-10-10",
-       "fall": 0.1275
+       "fall": 0.1243
       },
       "worst25_other": {
        "day": "2026-01-31",
@@ -6254,8 +6254,8 @@ const ALL = {
     },
     "response": {
      "lighter-main": {
-      "seconds": 1444,
-      "parts": "Lighter withdrawal to Ethereum 23.7 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
+      "seconds": 1232,
+      "parts": "Lighter withdrawal to Ethereum 20.1 min (fast bridge limit $0) + relay Ethereum to BSC 24 s + repay"
      },
      "hyperliquid": {
       "seconds": 395.1640000343323,
@@ -6273,9 +6273,9 @@ const ALL = {
     "yield_label": "2.21%",
     "yield_src": "DefiLlama binance-staked-eth, $8.58B TVL",
     "floor": 3.0,
-    "note": "wBETH mints and redeems on Binance. On-chain, every pool together clears about $75k inside 5%, so every ceiling here is that on-chain one. An unwind that sends wBETH to Binance and redeems it there would lift the ceiling, but that is a custodial step, not an on-chain route, and it is not built.",
-    "exit5": 75349,
-    "venus_room": 8695280
+    "note": "wBETH mints and redeems on Binance. On-chain, every pool together clears about $79k inside 5%, so every ceiling here is that on-chain one. With a non-US entity that can custody and settle on global Binance, the unwind can sell into Binance's wBETH/ETH book: $13.9M inside 5% on 2026-09-25 (Binance.US lists no wBETH). The largest route is then Venus USDT on Hyperliquid, converted to USDC ($10.20M/day): $4.67M of equity at +2.78%, capped by the Venus supply cap, under the 3% floor. The best, Venus U on Hyperliquid, converted to USDC ($486k/day), nets +3.65% but its conversion leg holds it to $413k.",
+    "exit5": 78679,
+    "venus_room": 8788830
    },
    "model": {
     "equity": 1000.0,
@@ -6287,23 +6287,23 @@ const ALL = {
    "funding": {
     "Aster": {
      "apr": 4.38,
-     "longs_pay": 81.9,
-     "n": 1068,
-     "days": 356,
+     "longs_pay": 82.0,
+     "n": 1065,
+     "days": 355,
      "interval_h": 8.0
     },
     "Hyperliquid": {
      "apr": 6.14,
      "longs_pay": 83.1,
-     "n": 8543,
-     "days": 356,
+     "n": 8516,
+     "days": 355,
      "interval_h": 1.0
     },
     "Lighter": {
-     "apr": 5.31,
+     "apr": 5.32,
      "longs_pay": 77.4,
-     "n": 8544,
-     "days": 356,
+     "n": 8517,
+     "days": 355,
      "interval_h": 1.0
     }
    },
@@ -6317,7 +6317,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.625,
-     "free": 50292906,
+     "free": 48465141,
      "flat": false,
      "kink_room": 20670067,
      "kink_label": "rate kink at 84%",
@@ -6537,7 +6537,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.625,
-     "free": 10010555,
+     "free": 10002775,
      "flat": false,
      "kink_room": 4296734,
      "kink_label": "rate kink at 80%",
@@ -6757,7 +6757,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.625,
-     "free": 448237,
+     "free": 448409,
      "flat": false,
      "kink_room": 256263,
      "kink_label": "rate kink at 80%",
@@ -6977,7 +6977,7 @@ const ALL = {
      "days": 371,
      "lt": 0.8,
      "ltv": 0.625,
-     "free": 203307,
+     "free": 203304,
      "flat": false,
      "kink_room": 131995,
      "kink_label": "rate kink at 80%",
@@ -7232,32 +7232,32 @@ const ALL = {
       "net": 3.655
      },
      "net": 3.655,
-     "delta1_net": 3.66,
+     "delta1_net": 3.65,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 8508972,
+        "usd": 8502359,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -7280,8 +7280,8 @@ const ALL = {
      "funding": {
       "apr": 6.14,
       "longs_pay": 83.1,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
@@ -7331,38 +7331,38 @@ const ALL = {
       "legs": {
        "yield": 4.162,
        "debt": -4.868,
-       "funding": 4.685,
+       "funding": 4.694,
        "costs": -1.056
       },
-      "net": 2.923
+      "net": 2.932
      },
-     "net": 2.923,
-     "delta1_net": 2.92,
+     "net": 2.932,
+     "delta1_net": 2.93,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 8508972,
+        "usd": 8502359,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -7383,17 +7383,17 @@ const ALL = {
       "U \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.31,
+      "apr": 5.32,
       "longs_pay": 77.4,
-      "n": 8544,
-      "days": 356,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.138,
-      "funding": 5.31,
+      "funding": 5.32,
       "lt": 0.8,
       "ltv": 0.625,
       "yield": 2.211,
@@ -7445,26 +7445,26 @@ const ALL = {
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 42748970,
+        "usd": 41195370,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -7480,8 +7480,8 @@ const ALL = {
      "funding": {
       "apr": 6.14,
       "longs_pay": 83.1,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
@@ -7530,32 +7530,32 @@ const ALL = {
       "net": 2.102
      },
      "net": 2.102,
-     "delta1_net": 2.11,
+     "delta1_net": 2.1,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 8508972,
+        "usd": 8502359,
         "per": "debt",
-        "raw": 10010555
+        "raw": 10002775
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus U rate kink at 80%",
@@ -7576,9 +7576,9 @@ const ALL = {
      ],
      "funding": {
       "apr": 4.38,
-      "longs_pay": 81.9,
-      "n": 1068,
-      "days": 356,
+      "longs_pay": 82.0,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
@@ -7634,32 +7634,32 @@ const ALL = {
       "net": 2.085
      },
      "net": 2.085,
-     "delta1_net": 2.09,
+     "delta1_net": 2.08,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 381001,
+        "usd": 381148,
         "per": "debt",
-        "raw": 448237
+        "raw": 448409
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus USD1 rate kink at 80%",
@@ -7682,8 +7682,8 @@ const ALL = {
      "funding": {
       "apr": 6.14,
       "longs_pay": 83.1,
-      "n": 8543,
-      "days": 356,
+      "n": 8516,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
@@ -7730,38 +7730,38 @@ const ALL = {
       "legs": {
        "yield": 4.162,
        "debt": -5.746,
-       "funding": 4.685,
+       "funding": 4.694,
        "costs": -1.056
       },
-      "net": 2.045
+      "net": 2.054
      },
-     "net": 2.045,
-     "delta1_net": 2.04,
+     "net": 2.054,
+     "delta1_net": 2.06,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 42748970,
+        "usd": 41195370,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -7775,17 +7775,17 @@ const ALL = {
       "bridge to Arbitrum"
      ],
      "funding": {
-      "apr": 5.31,
+      "apr": 5.32,
       "longs_pay": 77.4,
-      "n": 8544,
-      "days": 356,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 4.884,
-      "funding": 5.31,
+      "funding": 5.32,
       "lt": 0.8,
       "ltv": 0.625,
       "yield": 2.211,
@@ -7828,38 +7828,38 @@ const ALL = {
       "legs": {
        "yield": 4.162,
        "debt": -6.439,
-       "funding": 4.685,
+       "funding": 4.694,
        "costs": -1.056
       },
-      "net": 1.352
+      "net": 1.361
      },
-     "net": 1.352,
-     "delta1_net": 1.35,
+     "net": 1.361,
+     "delta1_net": 1.36,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 381001,
+        "usd": 381148,
         "per": "debt",
-        "raw": 448237
+        "raw": 448409
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus USD1 rate kink at 80%",
@@ -7880,17 +7880,17 @@ const ALL = {
       "USD1 \u2192 USDT"
      ],
      "funding": {
-      "apr": 5.31,
+      "apr": 5.32,
       "longs_pay": 77.4,
-      "n": 8544,
-      "days": 356,
+      "n": 8517,
+      "days": 355,
       "interval_h": 1.0
      },
      "flag": null,
      "exit": [],
      "inputs": {
       "rate": 5.473,
-      "funding": 5.31,
+      "funding": 5.32,
       "lt": 0.8,
       "ltv": 0.625,
       "yield": 2.211,
@@ -7931,32 +7931,32 @@ const ALL = {
       "net": 1.225
      },
      "net": 1.225,
-     "delta1_net": 1.23,
+     "delta1_net": 1.22,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 42748970,
+        "usd": 41195370,
         "per": "debt",
-        "raw": 50292906
+        "raw": 48465141
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus USDT rate kink at 84%",
@@ -7969,9 +7969,9 @@ const ALL = {
      "deps": [],
      "funding": {
       "apr": 4.38,
-      "longs_pay": 81.9,
-      "n": 1068,
-      "days": 356,
+      "longs_pay": 82.0,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
@@ -8028,26 +8028,26 @@ const ALL = {
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 172811,
+        "usd": 172808,
         "per": "debt",
-        "raw": 203307
+        "raw": 203304
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus lisUSD rate kink at 80%",
@@ -8068,9 +8068,9 @@ const ALL = {
      ],
      "funding": {
       "apr": 4.38,
-      "longs_pay": 81.9,
-      "n": 1068,
-      "days": 356,
+      "longs_pay": 82.0,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": "This is year one. Entry is all taker: the loop sells lisUSD into a pool that trades about $1.2k a day, losing 1.29% of what it sells at the $499k ceiling, 1.13% of equity. Year two onward earns +1.80%. Past the pool, lisUSD \u2192 USDT goes through Lista's PSM at 2%. Exit is free: USDT \u2192 lisUSD 1:1.",
@@ -8121,32 +8121,32 @@ const ALL = {
       "net": 0.532
      },
      "net": 0.532,
-     "delta1_net": 0.54,
+     "delta1_net": 0.53,
      "dial": {
       "add": 31.72,
       "worst": -5.94
      },
      "ceiling": {
-      "usd": 40029,
+      "usd": 41798,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "borrow market",
-        "usd": 381001,
+        "usd": 381148,
         "per": "debt",
-        "raw": 448237
+        "raw": 448409
        },
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 40029,
+        "usd": 41798,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        },
        {
         "name": "Venus wBETH cap",
-        "usd": 4619368,
+        "usd": 4669066,
         "per": "collateral",
-        "raw": 8695280
+        "raw": 8788830
        },
        {
         "name": "Venus USD1 rate kink at 80%",
@@ -8167,9 +8167,9 @@ const ALL = {
      ],
      "funding": {
       "apr": 4.38,
-      "longs_pay": 81.9,
-      "n": 1068,
-      "days": 356,
+      "longs_pay": 82.0,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null,
@@ -8216,14 +8216,14 @@ const ALL = {
       "worst": -6.73
      },
      "ceiling": {
-      "usd": 75349,
+      "usd": 78679,
       "binding": "wBETH exit on-chain, 5%",
       "all": [
        {
         "name": "wBETH exit on-chain, 5%",
-        "usd": 75349,
+        "usd": 78679,
         "per": "collateral",
-        "raw": 75349
+        "raw": 78679
        }
       ]
      },
@@ -8236,18 +8236,18 @@ const ALL = {
       "haircut": 0.9
      },
      "book": {
-      "0.5": 14657389,
-      "1": 40491040,
-      "2": 63445869
+      "0.5": 14322533,
+      "1": 43160499,
+      "2": 60499067
      },
      "deps": [
       "wBETH margin counts at 90% on Aster"
      ],
      "funding": {
       "apr": 4.38,
-      "longs_pay": 81.9,
-      "n": 1068,
-      "days": 356,
+      "longs_pay": 82.0,
+      "n": 1065,
+      "days": 355,
       "interval_h": 8.0
      },
      "flag": null
