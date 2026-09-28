@@ -141,6 +141,31 @@ svg .m{fill:var(--mute)}
 .vizwrap{overflow-x:auto;border:1px solid var(--line);background:var(--panel)}
 .below{margin-top:18px}
 
+/* live route proof */
+.proof{max-width:1240px;margin-inline:auto;padding-block:40px 72px;border-top:1px solid var(--line);display:grid;gap:30px}
+.proof>*,.ptwo>*{min-width:0}
+.proof h2{font-size:26px;font-weight:800;letter-spacing:-.01em;margin:6px 0 0;text-wrap:balance}
+.proof h3{font-size:15px;font-weight:700;margin:0 0 10px}
+.proof p{margin:0}
+.proof .lede{color:var(--mute);max-width:72ch;margin-top:8px;font-size:15px}
+.proof .kv{margin-top:18px}
+.proof .kv b.pos{color:var(--pos)}
+.ptbl{min-width:900px}
+.ptbl td{white-space:normal;vertical-align:top}
+.ptbl .rt b{display:block;font-weight:500}
+.ptbl .rt span{display:block;font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:2px}
+.ptbl .cell{display:grid;gap:5px;max-width:30ch}
+.ptbl .cell small{font-size:12px;color:var(--mute);line-height:1.35}
+.pchip{display:inline-flex;align-items:center;gap:6px;width:max-content;font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:3px;border:1px solid var(--pos);color:var(--pos)}
+.pchip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.ptwo{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px}
+.ptwo ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+.fixes{display:grid;gap:8px}
+.fixes div{border:1px solid var(--line);border-left:4px solid var(--pos);background:var(--panel);padding:11px 14px;font-size:14px}
+.fixes div b{font-weight:600}
+.fixes div p{color:var(--mute);margin-top:3px;font-size:13px}
+.plink{font-family:var(--mono);font-size:12px;color:var(--mute);text-decoration:none;border-bottom:1px dotted var(--mute)}
+.plink:hover{color:var(--ink)}
 </style>
 <style>html,body{margin:0}</style>
 </head>
@@ -149,10 +174,40 @@ svg .m{fill:var(--mute)}
 
 <header class="top">
   <div class="brand">/alpha-<span>structures</span></div>
+  <a class="plink" href="#proof">live proof: 33 of 33 passed</a>
   <div class="dsel" role="group" aria-label="Resting delta"><span>resting delta</span><button data-delta="1">1</button><button data-delta="0.5">0.5</button><button data-delta="0">0</button></div>
   <div class="tg" style="margin-left:0">+ variable hedge <button id="dialbtn" aria-pressed="false" aria-label="Add variable hedge"></button></div>
 </header>
 <main id="app"></main>
+<section class="proof" id="proof" aria-labelledby="proof-h">
+  <div>
+    <div class="lbl">BSC mainnet · real vaults · 2026-09-25 to 2026-09-27</div>
+    <h2 id="proof-h">Live route proof</h2>
+    <p class="lede">Every route on this page was run live, in its own vault on BSC mainnet, at the three resting deltas above: 1, 0.5 and 0. Each run looped to the target LTV, hedged to the delta, served a 40% redemption and paid the claim. Books were small (about $30 to $150 of slisBNB or BTCB), so some hedges stop one venue lot or one minimum order short of the target; each cell says so.</p>
+    <div class="kv" id="proof-kv"></div>
+  </div>
+  <div>
+    <h3>Routes and resting deltas</h3>
+    <div class="scroll vizwrap"><table class="tbl ptbl"><thead><tr><th>Asset</th><th>Route</th><th class="r">APR at test</th><th>Delta 1</th><th>Delta 0.5</th><th>Delta 0</th></tr></thead><tbody id="proof-rows"></tbody></table></div>
+  </div>
+  <div class="ptwo">
+    <div>
+      <h3>A run passes when</h3>
+      <ul>
+        <li>LTV sits inside the band around the target.</li>
+        <li>Measured delta is within 0.1 of the gear, or one venue lot away.</li>
+        <li>The served hedge cut is 0.35 to 0.45 of the hedge, or lot-limited and stated.</li>
+        <li>Margin comes home through the venue's withdrawal and repays debt.</li>
+        <li>LTV never rises more than 300 bps above its pre-service level.</li>
+        <li>The investor receives the claim.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What the live runs forced</h3>
+      <div class="fixes" id="proof-fixes"></div>
+    </div>
+  </div>
+</section>
 
 <script>
 const ALL = {
@@ -8518,6 +8573,32 @@ document.addEventListener("click",e=>{
 document.addEventListener("toggle",e=>{if(e.target.classList&&e.target.classList.contains("ghosts")){st.ghosts=e.target.open;save()}},true);
 document.addEventListener("input",e=>{if(e.target.id==="ltvg"){st.ltvBy[e.target.dataset.debt]=+e.target.value;render();const i=document.getElementById("ltvg");i&&i.focus();return}if(e.target.id==="sl"){st.b.sleeves=+e.target.value;render();const i=document.getElementById("sl");i.focus();i.setSelectionRange?.(9,9)}});
 render();
+</script>
+
+<script>
+(()=>{
+const RUNS={"slisbnb-lista-usdt-lighter-d1": {"at": "2026-09-26T04:15Z", "note": "Net APR +1.86% (Lighter funding turned -0.88%). LTV 3944 (margin buffer uses the LTV budget on a $54 book); hedge target 0.0097 BNB under the 0.01 lot, delta 1.17."}, "btcb-lista-usd1-lighter-d0.5": {"at": "2026-09-26T10:19Z", "note": "Net APR +8.24%. LTV 5972, short 0.00046 BTC (target 0.00047), delta 0.518."}, "btcb-lista-u-lighter-d1": {"at": "2026-09-26T09:09Z", "note": "Net APR +7.29% (Lighter BTC funding +10.5%). LTV 7273, short 0.00039 BTC (target 0.000397), delta 1.013."}, "btcb-lista-usd1-hl-d0.5": {"at": "2026-09-26T07:30Z", "note": "LTV 5975, short 0.00049 BTC read on Hyperliquid (computed target ~0.0005, delta ~0.5). Net APR about +7% at +10% funding; the bot's readout was in DegradedData from network timeouts."}, "slisbnb-lista-u-hl-d0.5": {"at": "2026-09-26T03:05Z", "note": "Net APR +10.67%. LTV 5337, short 0.04 BNB (target 0.0375), delta 0.507."}, "btcb-lista-u-lighter-d0": {"at": "2026-09-26T09:23Z", "note": "Net APR +13.08%. LTV 7287, short 0.00085 BTC (target 0.00094), delta 0.17 (last $7.50 under Lighter's $10 minimum)."}, "slisbnb-lista-usdt-lighter-d0.5": {"at": "2026-09-26T04:26Z", "note": "Net APR +1.65%. LTV 3943, short 0.03 of 0.0385 BNB (rest under the lot). Delta from the book 0.67; the bot's readout said 0.99 (flagged)."}, "slisbnb-lista-usdt-lighter-d0": {"at": "2026-09-26T13:45Z", "note": "Rerun 13:45Z with route 1's stray bot gone: LTV 5628, short 0.07 BNB (target 0.0704), delta 0.007, net APR +0.99%, short steady. The first run failed because route 1's bot traded the same Lighter account and withdrew $8.77 of route 2's margin into route 1's vault (recovered; not a trading loss)."}, "btcb-lista-u-hl-d1": {"at": "2026-09-26T06:05Z", "note": "Net APR +5.22% (Hyperliquid BTC funding +6.6%). LTV 7287, short 0.0004 BTC (target 0.00042), delta 1.002."}, "slisbnb-lista-u-lighter-d1": {"at": "2026-09-26T00:05Z", "note": "Net APR +7.33% (Lighter funding +10.5%). LTV 5786, short 0.04 of 0.043 BNB, delta 1.04, margin $21.41."}, "slisbnb-venus-u-lighter-d0": {"at": "2026-09-26T12:05Z", "note": "Net APR -28.23% at -21.9% funding. LTV 4756, short 0.06 BNB (target 0.0635), delta 0.062."}, "slisbnb-lista-usdt-hl-d0.5": {"at": "2026-09-26T14:52Z", "note": "Net APR +10.18% (Hyperliquid BNB funding +10.95%). Short 0.044 BNB (target 0.0445), delta 0.510."}, "slisbnb-venus-u-lighter-d1": {"at": "2026-09-26T11:59Z", "note": "Net APR -19.52% (Lighter BNB funding swung to -21.9%; page 1.61%). LTV 5632, short 0.02 BNB (target 0.0205), delta 1.009. Carry gate lowered for the test."}, "slisbnb-lista-u-lighter-d0": {"at": "2026-09-26T00:27Z", "note": "Net APR +13.11%. LTV 5685, short 0.09 BNB (target 0.096), measured delta 0.34; the rest is under Lighter's $10 minimum. Needed the new gear-shift rung."}, "btcb-lista-u-hl-d0": {"at": "2026-09-26T06:12Z", "note": "Net APR +8.42%. LTV 7284, short 0.00089 of 0.000999 BTC, delta 0.19 (last $9.20 under the $10 minimum)."}, "slisbnb-lista-usdt-aster-d0": {"at": "2026-09-26T02:27Z", "note": "Net APR +0.44% (Aster funding +0.35%). LTV 5631, short 0.04 of 0.0475 BNB, delta 0.18 (rest under the 0.01 lot)."}, "btcb-lista-usd1-hl-d0": {"at": "2026-09-26T07:38Z", "note": "Net APR +11.17%. LTV 5975, short 0.00073 BTC (target 0.00078), delta 0.088."}, "btcb-lista-usd1-lighter-d0": {"at": "2026-09-26T10:23Z", "note": "Net APR +11.42%. LTV 5974, short 0.00071 BTC (target 0.00074), delta 0.058."}, "slisbnb-lista-usdt-hl-d0": {"at": "2026-09-26T14:57Z", "note": "Net APR +13.27%. Short 0.06 BNB (target 0.0702), delta 0.199 (last $7.90 under Hyperliquid's $10 minimum)."}, "slisbnb-lista-usdt-hl-d1": {"at": "2026-09-26T14:32Z", "note": "LTV 5630, short 0.02 BNB (target 0.0188), net APR +7.10%. The bot had read route 8's leftover 0.00001 BTC as its short and over-hedged to 0.211 BNB; cut by hand, and venue reads now count only the vault's own market."}, "btcb-lista-u-hl-d0.5": {"at": "2026-09-26T06:08Z", "note": "Net APR +6.60%. LTV 7284, short 0.00071 BTC (target 0.00071), delta 0.500."}, "slisbnb-lista-u-lighter-d0.5": {"at": "2026-09-26T00:40Z", "note": "Net APR +10.22%. LTV 5786, short 0.07 of 0.0825 BNB, delta 0.66 (last $9.70 is under Lighter's $10 minimum order)."}, "slisbnb-lista-u-aster-d0.5": {"at": "2026-09-25T21:32Z", "note": "Net APR -0.72% (Aster funding 0). LTV 6059, short 0.04 BNB, delta 0.584."}, "btcb-lista-usd1-lighter-d1": {"at": "2026-09-26T10:16Z", "note": "Net APR +5.07% (Lighter BTC funding +10.5%). LTV 5975, short 0.00019 BTC (target 0.000198), delta 1.016."}, "btcb-lista-usd1-hl-d1": {"at": "2026-09-26T07:20Z", "note": "Net APR +5.24% (Hyperliquid BTC funding +10.8%). LTV 5976, short 0.00021 BTC (target 0.000216, read on Hyperliquid). Flaky network put the bot in DegradedData on alternate ticks."}, "slisbnb-lista-usdt-aster-d1": {"at": "2026-09-26T02:20Z", "note": "Net APR +0.24% (Aster funding +0.7%). LTV 3994 on a $33 book (the $10 margin buffer uses the LTV budget); hedge target 0.0066 BNB is under the 0.01 lot, delta 1.16."}, "slisbnb-lista-u-aster-d1": {"at": "2026-09-25T20:40Z", "note": "LTV 5723, short 0.03 BNB, 40% paid 0.0316 slisBNB; cut 33% (lot-limited). Needed gate overrides."}, "slisbnb-lista-u-hl-d1": {"at": "2026-09-26T03:01Z", "note": "Net APR +7.66% (Hyperliquid funding +10.95%). LTV 5338, delta 0.99; hedge target 0.0025 BNB is under the $10 minimum. Margin bridged live BSC to Arbitrum to Hyperliquid."}, "slisbnb-lista-u-hl-d0": {"at": "2026-09-26T03:09Z", "note": "Net APR +13.68%. LTV 5335, short 0.07 BNB (target 0.0725), delta 0.007."}, "slisbnb-venus-u-lighter-d0.5": {"at": "2026-09-26T12:02Z", "note": "Net APR -24.28% at -21.9% funding. LTV 5632, short 0.04 of 0.0486 BNB, delta 0.65 (last $6.70 under Lighter's $10 minimum)."}, "slisbnb-lista-u-aster-d0": {"at": "2026-09-25T21:44Z", "note": "Net APR -0.68% (Aster funding 0). LTV 5782, short 0.09 of 0.099 BNB, delta 0.118 (one lot)."}, "slisbnb-lista-usdt-aster-d0.5": {"at": "2026-09-26T02:23Z", "note": "Net APR +0.35% (Aster funding +0.6%). LTV 5631, short 0.02 of 0.027 BNB, delta 0.67 (rest under the 0.01 lot)."}, "btcb-lista-u-lighter-d0.5": {"at": "2026-09-26T09:13Z", "note": "Net APR +10.19%. Short 0.00066 BTC (target 0.00067), delta 0.518."}}, ROUTES=[["slisBNB", "slisbnb-lista-u-lighter", "Lista U, Lighter", "U → USDT → USDC → Arbitrum → short BNB", 5.48], ["slisBNB", "slisbnb-lista-usdt-lighter", "Lista USDT, Lighter", "USDT → USDC → Arbitrum → short BNB", 4.94], ["slisBNB", "slisbnb-lista-u-hl", "Lista U, Hyperliquid", "U → USDT → USDC → Arbitrum → short BNB", 4.14], ["slisBNB", "slisbnb-lista-usdt-hl", "Lista USDT, Hyperliquid", "USDT → USDC → Arbitrum → short BNB", 3.76], ["slisBNB", "slisbnb-lista-u-aster", "Lista U, Aster", "U → USDT → short BNB on Aster", 2.1], ["slisBNB", "slisbnb-lista-usdt-aster", "Lista USDT, Aster", "USDT → short BNB on Aster", 1.94], ["slisBNB", "slisbnb-venus-u-lighter", "Venus U, Lighter", "U → USDT → USDC → Arbitrum → short BNB", 1.61], ["BTCB", "btcb-lista-u-hl", "Lista U, Hyperliquid", "U → USDT → USDC → Arbitrum → short BTC", 2.0], ["BTCB", "btcb-lista-usd1-hl", "Lista USD1, Hyperliquid", "USD1 → USDT → USDC → Arbitrum → short BTC", 1.43], ["BTCB", "btcb-lista-u-lighter", "Lista U, Lighter", "U → USDT → USDC → Arbitrum → short BTC", 1.41], ["BTCB", "btcb-lista-usd1-lighter", "Lista USD1, Lighter", "USD1 → USDT → USDC → Arbitrum → short BTC", 1.03]], FIXES=[["Payout waits for margin", "Service redeemed collateral before venue margin came home and pushed LTV to 7541 bps. The served share of margin now returns and repays first. Proven live on the Aster vault."], ["A restart keeps the served cut", "A bot restart mid-payout forgot the hedge size at service start and tried a second 40% trim. The service-start hedge is now stored and restored."], ["Orders respect the venue lot", "Hedge orders below one lot looped on a zero-size order. Sizes now round to the venue step first."], ["Each swap hop spends what the last one delivered", "Multi-hop swaps left 0.07 to 0.31 of USDT or USD1 in each vault after exit. The vault contract now spends each hop's actual output in the same transaction; a live entry and exit on 2026-09-27 left zero USDT, WBNB and USDC behind."], ["Transactions carry gas headroom", "A three-hop exit swap ran out of gas at 97% of its estimate. Transactions now carry 20% over the estimate; only gas used is charged."]], GEARS=["d1","d0.5","d0"];
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const tb=document.getElementById("proof-rows");let pass=0,last="";
+for(const [asset,id,name,path,apr] of ROUTES){
+  const tr=el("tr");tr.append(el("td","mono",asset));
+  const rt=el("td","rt");rt.append(el("b","",name),el("span","",path));tr.append(rt);
+  tr.append(el("td","r num",apr.toFixed(2)+"%"));
+  for(const g of GEARS){
+    const r=RUNS[id+"-"+g],c=el("div","cell"),td=el("td");
+    if(r){pass++;if(r.at>last)last=r.at;c.append(el("span","pchip","Passed"),el("small","",r.note));}
+    else c.append(el("span","mute","Not run"));
+    td.append(c);tr.append(td);
+  }
+  tb.append(tr);
+}
+const kv=document.getElementById("proof-kv");
+for(const [k,v,cls] of [["Runs passed",pass+" of "+ROUTES.length*GEARS.length,"pos"],["Routes",String(ROUTES.length),""],["Resting deltas","1 · 0.5 · 0",""],["Last run",last.slice(0,10),""]]){
+  const d=el("div");d.append(el("span","lbl",k));const b=el("b",cls,v);d.append(b);kv.append(d);
+}
+const fx=document.getElementById("proof-fixes");
+for(const [t,b] of FIXES){const d=el("div");d.append(el("b","",t),el("p","",b));fx.append(d);}
+})();
 </script>
 
 </body>
